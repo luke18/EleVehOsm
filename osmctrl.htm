@@ -1,0 +1,754 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>COSMCtrl v1.15</title>
+<link rel="stylesheet" type="text/css" href="./naughter.css">
+</head>
+
+<body>
+
+<h2>COSMCtrl v1.15</h2>
+
+<p>Welcome to COSMCtrl, A freeware MFC GUI control class which implements 
+display of <a href="http://www.openstreetmap.org/">OpenStreetMap</a> tiles.</p>
+
+<p>
+<img alt="COSMCtrl Demo Application" height="866" src="OSMCtrl.jpg" width="1142">&nbsp;</p>
+
+<table border="0">
+<TBODY>
+  <tr>
+    <td><a href="#Features">Features</a></td>
+  </tr>
+  <tr>
+    <td><a href="#Usage">Usage</a></td>
+  </tr>
+  <tr>
+    <td><a href="#Copyright">Copyright</a></td>
+  </tr>
+  <tr>
+    <td><a href="#History">History</a></td>
+  </tr>
+  <tr>
+    <td><a href="#Future_Enhancements">Future Enhancements</a></td>
+  </tr>
+  <tr>
+    <td><a href="#Contact">Contacting the Author</a></td>
+  </tr>
+</TBODY>
+</table>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2><a name="Features"></a>Features 
+</h2>
+
+<ul>
+	<li>Provides a standard MFC CStatic derived class which can be used just 
+	like the CStatic class.</li>
+	<li>Supports Mapnik, Osmarender, Cyclemap, Mapquest OSM and Mapquest Open 
+	Aerial tile providers.</li>
+	<li>Supports downloading via Wininet/WinHTTP to a configurable local file system 
+	cache to improve performance.</li>
+	<li>Supports zooming via keyboard keys and the wheel mouse. It uses the keys '+' and '-' and a mouse left double click.</li>
+	<li>Supports scrolling via the keyboard as well as mouse dragging. It uses the keys 
+	&quot;Left&quot;, &quot;Back&quot;, &quot;Right&quot;, &quot;End&quot;, &quot;Up&quot;, &quot;Prior&quot;, &quot;Down&quot; and &quot;Next&quot;.</li>
+	<li>Implements asynchronous download of visible tiles.</li>
+	<li>Supports a scroll rose and zoom bar based on the same controls on the 
+	OpenStreeMap web site.</li>
+	<li>Supports displaying a simple legend which indicates scale.</li>
+	<li>Supports automatically displaying correct OpenStreetMap copyright 
+	attribution on the control. This is achieved through the use of a child 
+	control SysLink control with hyperlinks to the OpenStreetMap web site and 
+	the license it uses. </li>
+	<li>All of the control parts which the COSMCtrl class supports namely scroll 
+	rose, zoom bar, legend and the copyright items can be attached to specific 
+	client locations on the map.</li>
+	<li>Tiles from the previous and next zoom level can be used in a stretched 
+	and squeezed fashion if not available at the current zoom level.</li>
+	<li>Supports used defined markers, polylines, polygons and circles being 
+	overlaid on the map. In addition to just allowing static markers, polylines, 
+	polygons and circles to be added, the code has comprehensive support for 
+	interactively editing, dragging, moving and deleted these items. Please note 
+	that these items cannot be correctly displayed if they cross the 
+	international date line or if they traverse extreme polar latitudes which 
+	the slippy map tiles of OpenStreetMap do not cover.</li>
+	<li>Tiles outside the visible edge can be pre-cached for improved 
+	performance.</li>
+	<li>Provides helper methods to allow download of specific tiles.</li>
+	<li>Supports a full set of methods to calculate the distance between two 
+	points as well as calculate the end location from a start position given a 
+	certain distance and bearing. These methods implement C++ versions of 
+	Vincenty's Direct and Inverse algorithms. These methods are required for 
+	calculation of the scale bar as well as supporting dragging polygons and 
+	polylines. The sample app now uses these features to show the distance and 
+	bearing for the first polyline or polygon which is selected in the status 
+	bar.</li>
+	<li>The class supports a Rectangular selection mode. When this mode is 
+	activated, you can select specific markers, polylines and polygons on the 
+	map and in conjunction with support for the &quot;Delete&quot; button you can 
+	interactively edit the items on the map</li>
+	<li>A complete sample app which exercises all the classes functionality 
+	including print preview and printing support.</li>
+	<li>Supports a comprehensive &quot;Map Operations&quot; dialog. This in conjunction 
+	with the rectangular selection mechanism allows you to delete specific 
+	tiles, download specific tiles (optionally skipping files which have already 
+	been downloaded) as well as support Mapnik re-render requests. This dialog 
+	uses a worker thread to remain responsive while these potentially lengthy 
+	operations are taking place. In addition this dialog provides feedback via a 
+	progress control and a static text notification area as the operation is 
+	taking place as well as cancelation support. This dialog on its own provides 
+	a good example on how to implement a responsive user interface while a 
+	lengthy operation is happening.</li>
+	<li>Supports &quot;decimation&quot; of polylines and polygons. This feature adds new 
+	nodes between all the existing nodes of a polyline or polygon. This can 
+	prove useful where you have a feature where the curvature of the earth can 
+	cause distortion of the displayed object. By default this feature is 
+	provided for by double clicking on an editable polyline or polygon.</li>
+	<li>Support for drawing crosshairs at the center of the map.</li>
+	<li>Supports a ZoomToBounds method. This method takes two positions which 
+	the method will ensure will be shown on the map at the highest possible zoom 
+	level. In conjunction with various &quot;GetBoundingRect*&quot; methods you can now 
+	add your various items to the map and then zoom to those items. This avoids 
+	client code needing to explicitly handle zoom levels of center positions.</li>
+	<li>Provides a comprehensive API via the public methods of the class. In 
+	addition numerous virtual functions are provided to further customize the 
+	behaviour of the class.</li>
+	<li>Provides support for GPS devices via the authors
+<a href="http://www.naughter.com/gpscom2.html">GPSCom2</a> library.</li>
+	<li>As of v1.09, the control now uses the Windows 7 Animation API's if 
+	available for zoom level and position changes.</li>
+	<li>As of v1.10, the sample app now supports collecting track logs to GPX 
+	files and importing GPX files for display on the map.</li>
+	<li>As of v1.12, the sample app now supports Nominatim Search and reverse 
+	geocoding via the authors <a href="http://www.naughter.com/nominatim.html">
+	CNominatim</a> library.</li>
+	<li>As of v1.14, the sample app now includes support for using GPS devices 
+	which support the Windows 7 Sensors API in addition to the author's own
+	<a href="http://www.naughter.com/gpscom2.html">GPSCom2</a> library. This 
+	functionality is provided using the author's
+	<a href="http://www.naughter.com/mfcsensor.html">MfcSensor</a> library.</li>
+	<li>As of v1.15, the control now supports drawing with Direct2D as well as 
+	the older GDI+ graphics API. This new code provides a very good sample to 
+	developers who are looking to migrate their large GDI/GDI+ code bases to D2D 
+	as the before and after code in COSMCtrl can be compared to each other. </li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2><a name="Usage"></a>
+Usage</h2>
+
+<ul>
+	<li>To use COSMCtrl in your project simply include 
+	OSMCtrl.cpp, OSMCtrlCircle.cpp, OSMCtrlMapOperations.cpp, 
+	OSMCtrlPolygon.cpp, OSMCtrlPolyline.cpp, OSMCtrlPosition.cpp and 
+	OSMCtrlPosition.cpp from the test application in your application and #include &quot;OSMCtrl.h&quot; 
+in whichever files you want to use the class in. The various classes which make 
+	up COSMCtrl are contained in various separate modules and you can pull in 
+	only the modules your require in your client applications, e.g. if you just 
+	need to calculate the distance between two points, then you can use the 
+	OSMCtrlHelper.h module which contains the COSMCtrlHelper class without the 
+	need to pull in extra COSMCtrl module.s</li>
+	<li>A number of module required by the class are not included in the COSMCtrl 
+	zip download. These will need 
+	to download separately it separately, namely &quot;SortedArray.h&quot; from
+	<a href="http://www.naughter.com/sortedarray.html">
+	http://www.naughter.com/sortedarray.html</a>, &quot;GPSCom2Client.h&quot; and &quot;OSMCtrlGPX.h&quot; 
+	from <a href="http://www.naughter.com/gpscom2.html">
+	http://www.naughter.com/gpscom2.html</a> and &quot;cnominatim.h&quot; from
+	<a href="http://www.naughter.com/nominatim.html">
+	http://www.naughter.com/nominatim.html</a>. 
+	</li>
+	<li>You need to ensure that all the string resources of ID &quot;IDS_OSMCTRL*&quot; 
+	and dialog resources of &quot;IDD_OSMCTRL*&quot; are included in your client 
+	application. You can use drag and drop in the Visual C resource editor to 
+	quickly achieve this.</li>
+	<li>You can use the class anywhere you would use a CStatic class. e.g. 
+	you can create it dynamically via CStatic::Create (which is what the sample 
+	app does in OSMCtrlAppView.cpp) or you can subclass an existing static 
+	control (for example on a dialog).</li>
+	<li>The class is only supported on VC 2005 or later.</li>
+	<li>By default the class will use Direct2D to implement map drawing. To 
+	achieve this the code requires VC 2010 + SP1 to be installed. If you would 
+	prefer to use the older GDI+ support you can define the pre-processor value 
+	&quot;COSMCTRL_NOD2D&quot;.</li>
+	<li>By default the class uses WinHTTP to perform the tile downloads. If you 
+	would prefer to use Wininet, you can define the pre-processor value 
+	&quot;COSMCTRL_NOWINHTTP&quot;. Currently the included sample app uses Wininet.</li>
+	<li>Included in the download is a VC 2010 MFC SDI document view application which 
+demonstrates most of the main features of the control.</li>
+</ul>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<h2><b><a name="Copyright"></a>Copyright</b></h2>
+<ul>
+  <li>You are allowed to include the source code in any product (commercial, 
+	shareware, freeware or otherwise) when your product is released in binary 
+	form.</li>
+  <li>You are allowed to modify the source code in any way you want except you 
+	cannot modify the copyright details at the top of each module.</li>
+  <li>If you want to distribute source code with your application, then you are 
+	only allowed to distribute versions released by the author. This is to 
+	maintain a single distribution point for the source code.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<h2><a name="History"></a>
+History</h2>
+
+<p><b>V1.0 (28 November 2009)
+
+
+</b>
+
+
+<ul>
+  <li>Initial Public release</li>
+</ul>
+
+<p><b>V1.01 (17 December 2009)
+
+
+</b>
+
+
+<ul>
+  <li>Addition of a SetCenterPosition override method which allows the zoom 
+level to be changed in one go along with the centre position of the map.</li>
+	<li>The control now handles a left mouse double click as a request to zoom in 
+the map at the cursor position. This is consistent with how the main OpenStreetMap web site map operates</li>
+	<li>Addition of a GetPosition method which converts a client coordinates point 
+into a latitude and longitude position</li>
+	<li>Code now allows previous zoom level images to be used in a stretched 
+fashion if the tile does not exist at the current zoom level.</li>
+	<li>Code now allows next zoom level images to be used in a squeezed fashion if 
+the tile does not exist at the current zoom level.</li>
+	<li>The DrawScaleBar method now takes user preferences as to whether they are using 
+the Metric (Kilometres) or Imperial (Miles) system of measurement into account 
+when drawing the scale</li>
+	<li>The DrawScaleBar method now displays a rounded scale value rather than the exact 
+width of one tile</li>
+	<li>You can now customize the UserAgent string used by the class via the 
+SetUserAgent method</li>
+	<li>You can now customize the ordering of which tiles are downloaded. By 
+default the tiles which are closest to the centre of the map are downloaded 
+first and the algorithm works outwards from there. If you prefer you can 
+download using a simple download Y outer loop and a left to right inner loop. 
+This behaviour can be changed via the SetDownloadOrder method.</li>
+	<li>The sample app now explicitly does not draw the scroll rose and zoom bar 
+when the map is being printed.</li>
+	<li>By default the control now caches two additional rows/columns of tiles 
+around the edge of the map in anticipation that the end user will scroll around 
+the map. The number of additional row/columns which are cached in this mechanism 
+can be configured via the new SetDownloadTilesEdgeCount method. If you were to 
+use a value of 0, then only the tiles necessary to fully cover the visible 
+client area will be downloaded.</li>
+	<li>The sample app now includes static MFC build configurations and 
+	the exe included in the download now pulls in MFC this way.</li>
+</ul>
+
+<p><b>V1.02 (10 January 2010)
+
+
+</b>
+
+
+<ul>
+  <li>Fixed a bug in the display of the polar regions at low zoom settings. </li>
+	<li>You can now scroll horizontally continuously around all longitudes.</li>
+	<li>Fixed an issue where the scale would report a distance of 0 meters 
+	at zoom level 0.</li>
+	<li>Improved the overall responsiveness of the control by ensuring that the 
+	download thread returns quickly from any blocking calls when the code needs 
+	to terminate the download thread. The trick which the code uses is to share 
+	the Wininet session handle between the download thread and the main thread 
+	and when it comes time to kill the download thread the session handle is 
+	closed via InternetCloseHandle in the main thread. This causes any derived 
+	Wininet handles which the download thread has created from this session 
+	handle to become invalid and causes any blocking call on these handles to 
+	return with an error. This change also means that I do not need to 
+	completely re-architect the code to use asynchronous Wininet calls. Having 
+	taken a look at how asynchronous Wininet works I'm real glad about this.</li>
+	<li>Fixed an issue in DownloadThread() where the code would attempt to 
+	download a tile with an invalid Y value. This resulted in spurious TRACE 
+	messages in debug builds.</li>
+	<li>Fixed a bug where the OnPaint method was not using the values returned 
+	from GetDrawScrollRose(), GetDrawZoomBar() &amp; GetDrawScaleBar().</li>
+	<li>As a really nice to have, the Zoom Bar is now drawn using 
+	transparency, just like on the main OpenStreetMap web site. As you may know 
+	GDI does not really handle transparency well, so I found it hard to find a 
+	good example on how to achieve this. Most of the examples I found were based 
+	on using a pre-existing image with an alpha channel already provided. My 
+	COSMCtrl code does not require any pre-rendered bitmaps and I wanted to keep 
+	the code this way. I did not also want to throw away all the GDI code and 
+	replace it with GDI+ code just for this one effect. For those interested in 
+	how the code works, it uses ATL::CImage to generate a 32 bit ARGB DIB 
+	section bitmap and selects that into a memory device context. Then I use 
+	standard GDI calls as before to render most of the parts of the zoom bar, 
+	then I directly access the bits of the DIB section via CImage::GetBits and 
+	CImage::GetPitch and modify the transparency of specific pixels to achieve 
+	the effect I want. At this point you also need to do the calculations to 
+	ensure the RGB components of the pixel are premultiplied by the alpha value 
+	as this is what is required. Then I use CDC::AlphaBlend to blend the just 
+	created zoom bar pixels onto the map data which has already been rendered to 
+	the device context. I was worried about the performance of this code as I 
+	need to iterate across all the pixels of the DIB section to achieve this 
+	effect, but some profiling on my main dev machine showed that it added very 
+	little overhead to the total rendering time. All of this code is in 
+	COSMCtrl::DrawZoomBar and hopefully you may find this code of interest for 
+	your own projects which want to do runtime alpha blending. Finally if you do 
+	not want a transparent zoom bar, you can disable this effect using 
+	SetUseTransparencyForZoomBar(FALSE).</li>
+	<li>You can now optionally draw rectangles around each rendered tile 
+	via SetDrawTileOutlines(TRUE). </li>
+	<li>The sample app now ships with a VC 2008 solution and project 
+	instead of VC 2005. </li>
+	<li>The sample app now uses separate cache directories for the 
+	different tile providers. In addition the cache directory is now located at 
+	&quot; &quot;CSIDL_LOCAL_APPDATA&quot;\OSMCtrlApp\&quot;Provider&quot; &quot; </li>
+	<li>The client area is now invalidated when you change tile provider. </li>
+	<li>The sample app now can display a tile properties dialog when you 
+	right mouse click on the map. This dialog uses SysLink controls and as such 
+	will only show up if you build a Unicode version of the app. As such the 
+	binary included in the download is now the Static Unicode Release build. 
+	This tile properties dialog shows the following tile attributes: Provider, 
+	URL to download from, local cache path, the physical dimensions of the tile 
+	vertically and horizontally, The center position of the tile, the tile 
+	Coordinates and the Rerender and status URLs if any. Please note that the 
+	vertical distance is the actual great arc distance from the top left of the 
+	tile to the bottom left, while the horizontal distance is the great arc 
+	distance from the bottom left of the tile to the bottom right of the tile. 
+	It is important to emphasize this as at lower zoom levels the scale of the 
+	map becomes different depending on where you are located in the tile. </li>
+	<li>Updated the sample app icon to use the standard OpenStreetMap logo.</li>
+</ul>
+
+<p><b>V1.03 (16 March 2010)
+
+
+</b>
+
+
+<ul>
+  <li>Updated the sample app to include copyright details in line with 
+	information at
+	<a href="http://wiki.openstreetmap.org/wiki/Legal_FAQ#I_would_like_to_use_OpenStreetMap_maps._How_should_I_credit_you.3F">
+	http://wiki.openstreetmap.org/wiki/Legal_FAQ#I_would_like_to_use_OpenStreetMap_maps._How_should_I_credit_you.3F</a>. 
+	The copyright details are displayed in the about dialog and on the main map 
+	itself. For client applications which use COSMCtrl, you should review these 
+	details to make sure you are compliant with the OpenStreetMap licensing 
+	requirements.</li>
+	<li>The zoom bar can now be shown using a standard Win32 slider control 
+	instead of custom draw code and this setting is now the default. To change 
+	this behaviour you can use SetDrawZoomBarAsSlider(FALSE)</li>
+	<li>The setting to allow a zoom via double click has now been separated from 
+	the setting to allow a zoom via the wheel mouse.</li>
+	<li>Sample app now shows the modified date of the tile in the Tile 
+	Properties dialog</li>
+	<li>The sample app now allows a specific tile to be refreshed via the view 
+	context menu and the main application menu </li>
+	<li>The scroll rose, zoom bar, and scale bar can all now be placed on the 
+	control in an arbitrary position. This is achieved via two additional 
+	parameters to SetDrawScrollRose, SetDrawZoomBar and SetDrawScaleBar. These 
+	parameters allow an anchor position on the map to be chosen for the control 
+	as well as an offset position.</li>
+	<li>Fixed an issue where the download thread would get created if the cache 
+	directory was not specified.</li>
+	<li>The class now supports markers, polylines, polygons and circles being 
+	overlaid on the map. In addition to just allowing static markers, polylines, 
+	polygons and circles to be added, the code now has comprehensive support for 
+	interactively editing, dragging, moving and deleted these items. The sample 
+	app has been extensively modified to demo these features.</li>
+	<li>Re-implemented all GDI drawing code with GDI+. This provides much better 
+	support for features such as transparency etc and will make it easier to add 
+	more features to the code base going forward.</li>
+	<li>The class now supports a full set of methods to calculate the distance 
+	between two points as well as calculate the end location from a start 
+	position given a certain distance and bearing. These methods implement C++ 
+	versions of Vincenty's Direct and Inverse algorithms. These methods are 
+	required for calculation of the scale bar as well as supporting dragging 
+	polygons and polylines. The sample app now uses these features to show the 
+	distance and bearing for the first polyline or polygon which is selected in 
+	the status bar.</li>
+	<li>The code to draw the scale bar has been re-factored to allow further 
+	detailed client customization.</li>
+	<li>The various strings which are used by the class are now all stored in a 
+	string table. You need to ensure that all the string resources of ID 
+	&quot;IDS_OSMCTRL*&quot; and dialog resources of &quot;IDD_OSMCTRL*&quot; are included in your 
+	client application.</li>
+	<li>Fixed a bug where the download thread would not be created if you 
+	changed the location of the map using the cursor keys</li>
+	<li>The control now supports a Rectangular selection mode. When this mode is 
+	activated, you can select specific markers, polylines and polygons on the 
+	map and in conjunction with support for the &quot;Delete&quot; button you can 
+	interactively edit the items on the map </li>
+	<li>Addition of a new comprehensive &quot;Map Operations&quot; dialog. This in 
+	conjunction with the rectangular selection mechanism allows you to delete 
+	specific tiles, download specific tiles (optionally skipping files which 
+	have already been downloaded) as well as support Mapnik re-render requests. 
+	This dialog uses a worker thread to remain responsive while these 
+	potentially lengthy operations are taking place. In addition this dialog 
+	provides feedback via a progress control and a static text notification area 
+	as the operation is taking place as well as cancelation support. This dialog 
+	on its own provides a good example on how to implement a responsive user 
+	interface while a lengthy operation is happening.</li>
+	<li>The control now supports &quot;decimation&quot; of polylines and polygons. This 
+	feature adds new nodes between all the existing nodes of a polyline or 
+	polygon. This can prove useful where you have a feature where the curvature 
+	of the earth can cause distortion of the displayed object. By default this 
+	feature is provided for by double clicking on an editable polyline or 
+	polygon. Thanks to Dermot McNally for prompting this update</li>
+	<li>The control now has support for drawing crosshairs at the center of the 
+	map.</li>
+	<li>The control now supports a ZoomToBounds method. This method takes two 
+	positions which the method will ensure will be shown on the map at the 
+	highest possible zoom level. In conjunction with various new 
+	&quot;GetBoundingRect*&quot; methods you can now add your various items to the map and 
+	then zoom to those items. This avoids client code needing to explicitly 
+	handle zoom levels of center positions.</li>
+	<li>The arrow keys now scroll by a small amount while the likes of PageUp / 
+	PageDown keys will scroll by a tile at a time</li>
+</ul>
+
+<p><b>V1.04 (9 April 2010)</b><ul>
+	<li>Reworked the OnPaint code to use classic double buffering via a 
+	GDI memory device context rather than using the GDI+ equivalent code. This 
+	restructuring of the code gives up a typical improvement of 125 ms down to 
+	52 ms for a redraw over terminal services on my main dev machine (a 240% 
+	increase in performance) and a speed up of 140 ms down to 100 ms for a 
+	redraw on my primary graphics card on my main dev machine (a 40% increase in 
+	performance). My theory on why this new code is faster is probably due to 
+	the fact that we the code is now probably avoiding a code path in GDI+ which 
+	needs to convert from the internal GDI+ ARGB bitmap format to a format 
+	compatible with the display device context. Thanks to Frits van Veen for 
+	suggesting this update.</li>
+	<li>Following on from the previous performance optimization, the 
+	control now maintains an internal cache of Gdiplus::CachedBitmap* tiles in 
+	memory. The conversion process which GDI+ itself must perform to convert 
+	from its' internal format to the format compatible with the display device 
+	context proved to be a significant percentage of the time involved in 
+	drawing the control, hence the need for this caching optimization. The 
+	default size of this in memory cache array is 100 elements which based on 
+	average type tiles in Ireland corresponds to a total application memory 
+	usage for the unicode release build of demo app of about 30 MB. You can 
+	change this limit by using the new SetMaxInMemoryCachedTiles method. If you 
+	want you can turn of this caching by calling SetMaxInMemoryCachedTiles(0) 
+	(not advised as it will adversely impact performance of the control). To 
+	give you further background on how you would pick a good value for this: at 
+	a resolution of 2560 * 1600, a maximized window will display approximately 
+	60 OSM standard sized 256 * 256 tiles. This metric is where I arrived at 100 
+	for the default value. With this optimization now in place and taking the 
+	previous optimization example, the drawing time for a full screen window on 
+	my primary graphics card on my main dev machine has speeded up of 140 ms to 
+	100 ms to 15 ms. This corresponds to a 930% increase in performance! when 
+	compared to v1.03 of the control. You can really now see the difference in 
+	performance in the control when you drag the control and notice how really 
+	responsive it its. Again many thanks to Frits van Veen for doing all the low 
+	level performance testing and suggestions for this update.</li>
+	<li>If you hold down the control key while using the arrow keys to 
+	navigate around the map, the map now scrolls by a tile rather than a small 
+	pixel amount. This is consistent with how most other Map controls behave. 
+	Thanks to Frits van Veen for providing this update.</li>
+	<li>The amount which the ScrollToNorth/East/South/West() methods 
+	scroll by can now be controlled via a new SetScrollPixels() method. The 
+	default value for this has been increased from 4 to 20 pixels. Thanks to 
+	Frits van Veen for providing this update.</li>
+</ul>
+
+<p><b>V1.05 (10 April 2010)</b><ul>
+	<li>The control now only attempts to keep the position under the cursor when 
+you do a mouse zoom if the position is in the client area, otherwise the control 
+simple zooms in or out at the current center position</li>
+</ul>
+
+<p><b>V1.06 (1 May 2010)</b><ul>
+	<li>The control now has the concept of a GPS position and recent track. This 
+is achieved through the new member variables: m_GPSTrack and 
+m_colorGPSTrackPointer and the new methods of SetMaxGPSTracks, GetMaxGPSTracks &amp; 
+AddGPSTrack. In addition the sample app has been updated to use the authors 
+GPSCom2 library to add comprehensive support to the sample app for GPS devices.</li>
+</ul>
+<p><b>V1.07 (2 May 2010)</b></p>
+<ul>
+	<li>Reduced the m_nMaxGPSTracks default value to 600, which if we are 
+	receiving GPS data every second corresponds to the last 10 minutes of the 
+	track will be shown.</li>
+	<li>Introduced the concept of bearing valid and speed valid to COSMCtrlPosition. In addition the COSMCtrl now visually indicates the lack 
+	of a bearing valud by drawing the GPS triangle using black rather than the 
+	standard red color.</li>
+	<li>Introduced the concept of loss of a GPS fix to the control. If there is 
+	no fix, the GPS triangle will now only be drawn as an outline rather than 
+	drawn filled.</li>
+	<li>The GPS track polyline's attributes are now explicitly set in the 
+	COSMCtrl constructor.</li>
+	<li>Fixed a clipping problem in the code which calculates the bounding rect for the GPS track.</li>
+	<li>Fixed a clipping problem when the GPS triangle moves a significant 
+	distance from one fix to the next.</li>
+	<li>Optimized the code in AddGPSTrack when perform invalidations of 
+	the client area.</li>
+</ul>
+<p><b>V1.08 (22 July 2010)</b></p>
+<ul>
+	<li>Updated the code to work with GDI+ v1.0 which is the version supported 
+	prior to Windows Vista. Thanks to Richard Dols for reporting this issue. </li>
+	<li>Fixed a bug in DrawScaleBar where the actual distance shown would be out 
+	by a factor of two when the zoom value was anything other than zero. Thanks 
+	to Richard Dols for reporting this embarrassing mistake. </li>
+	<li>Fixed a redraw glitch for polylines by modifying COSMCtrl::GetBoundingRect(const 
+	COSMCtrlPolyline&amp; polyline... and COSMCtrl::GetBoundingRect(const 
+	COSMCtrlPolygon&amp; polygon... to not be as aggressive with its inclusion of 
+	the extra margin. </li>
+	<li>The SetTileProvider method now calls Invalidate internally. This ensures 
+	that the map cleanly updates when you switch tile providers.</li>
+</ul>
+<p><b>V1.09 (16 August 2010)</b></p>
+<ul>
+	<li>The control now includes support for fractional zoom levels. </li>
+	<li>The control now uses the Windows 7 Animation API's if available for zoom 
+	level and position changes. If you do not require animations then this 
+	behavior can be disabled. </li>
+	<li>Updated the sample app to compile cleanly on VC 2010. Also because 
+	the sample app now takes advantage of the Windows 7 Animation API's, the 
+	project files shipped in the sample are now for VC 2010 as this includes the 
+	Windows 7 SDK in the box. You can still use the control in older versions of 
+	VC though (&gt;= VC 2005). For example if you want to exclude the Windows 7 
+	Animation support, you can define the &quot;COSMCTRL_NOANIMATION&quot; preprocessor 
+	value. </li>
+	<li>Included some missing status bar prompts for menu items in the sample 
+	app </li>
+</ul>
+<p><b>V1.10 (23 August 2010)</b></p>
+<ul>
+	<li>Fixed a bug in COSMCtrl::SetZoom which caused drawing glitches in the 
+	zoom bar </li>
+	<li>Made the default animation speed a bit faster </li>
+	<li>To avoid requirements for client code to create the control using 
+	the WS_CLIPCHILDREN style, the control now forces a repaint on the zoom bar 
+	control and copyright control if they are in the clipping rect. </li>
+	<li>Fixed some maths problems in the COSMCtrl::HandleLButtonDownStandard 
+	when calculating the position of mouse clicks on the zoom bar </li>
+	<li>The sample app now includes support for logging tracks to a GPX 
+	file. This setting can be enabled in the GPS Settings dialog by checking the 
+	&quot;Enable GPX Track Log&quot; checkbox. When this is enabled, then every 
+	time a new 
+	GPRMC NMEA sentence arrives from your GPS device it will be logged. The 
+	location of the GPX file is &quot;CSIDL_LOCAL_APPDATA&quot;\OSMCtrlApp\GPX\YYYYMMDD.gpx&quot;. 
+	For performance reasons the GPX file will only be written to file every 60th 
+	new waypoint. For most GPS devices this should correspond to every minute. 
+	The code will also ensure that if the app is closed and restarted, that any 
+	existing data in today's GPX file will be preserved and a new track will be 
+	created. The code also correctly handles when a GPS fix has been lost under 
+	which it will create a new track segment in the GPX file. To support GPX 
+	files, a very simple set of MFC classes have been developed in the header 
+	file &quot;OSMCtrlGPX.H&quot;. These classes use MSXML 6 for its XML parsing and 
+	saving requirements. Please note that these classes are not comprehensive 
+	wrappers for all the features of GPX files, but just enough to support the 
+	COSMCtrl GPX requirements. If there is demand out there I may consider 
+	extending these classes to support all the features of GPX files. </li>
+	<li>The sample app now has support for importing GPX tracks and 
+	displaying them on the map. This can be achieved using the &quot;File -&gt; Import 
+	GPX File&quot; menu item. </li>
+</ul>
+<p><b>V1.11 (8 September 2010)</b></p>
+<ul>
+	<li>Updated the zip file to only include the VC 2010 project files. 
+	Thanks to Frits van Veen for reporting this issue. </li>
+	<li>Fixed up comment in sample app about inclusion of &quot;enumser.h&quot;. 
+	Thanks to Frits van Veen for reporting this issue. </li>
+	<li>Updated the zip file to include missing OSMCtrlGPX.h. Thanks to Frits 
+	van Veen for reporting this issue. </li>
+	<li>Fixed a bug in COSMCtrlAppView::OnFileImportGPXFile in the sample 
+	app where the filename filter was not working correctly. Thanks to Frits van 
+	Veen for reporting this issue. </li>
+	<li>Updated the error message in the sample app when a GPX file fails to 
+	import. It now mentions the need for 1.1 schema GPX files. </li>
+	<li>The sample app now saves the track log any time the filename for 
+	the log changes e.g. midnight crossovers. </li>
+	<li>Updated the GPX class to support saving and loading GPX waypoints. In 
+	addition the sample app now displays these waypoints when you import a GPX 
+	file. </li>
+	<li>Sample app now includes a more specific error message if GPSCom2 cannot 
+	be used because of a registration issue. Thanks to Frits van Veen for 
+	reporting this issue.</li>
+</ul>
+<p><b>V1.12 (1 November 2010)</b></p>
+<ul>
+	<li>Now supports the Mapquest tile provider as documented at
+	<a href="http://devblog.mapquest.com/2010/08/24/mapquest-opens-tiles-and-style-enables-rapid-data-updates/">
+	http://devblog.mapquest.com/2010/08/24/mapquest-opens-tiles-and-style-enables-rapid-data-updates/</a>
+	</li>
+	<li>CreateCopyrightLinkCtrl method now works correctly if Windows is 
+	using a High DPI setting </li>
+	<li>Fixed an ASSERT in the Draw method which could occur when m_bDrawZoomBarAsSlider is TRUE. </li>
+	<li>The ControlAnchorPosition and offset CPoint values now refers to 
+	the edge of the child control which is closest to the border instead of the 
+	top left edge of the control. This makes it easier for client applications 
+	to control layout behaviour. </li>
+	<li>Fixed a bug in the tile properties dialog in the sample app which 
+	would report the distance in meters instead of in Kilometers or Miles. </li>
+	<li>The sample app has been updated to use the author's CNominatim 
+	library to add comprehensive support for Nominatim searches and Address 
+	lookups </li>
+	<li>Fixed a bug where the download thread would not be restarted if 
+	the control uses a Windows animation during panning </li>
+	<li>DrawScaleBar has been refactored somewhat and now works correctly if 
+	Windows is using a High DPI setting </li>
+</ul>
+<p><b>V1.13 (20 November 2010)</b></p>
+<ul>
+	<li>Added support for a simple event handler mechanism to the class
+	</li>
+	<li>Reworked the sample app's Refresh Tile, Tile Properties and 
+	Address Lookup functions to allow the user to click on the part of the map 
+	where they want the operation performed rather than using the current cursor 
+	position. This means that using these options from the main menu is now more 
+	useful. Thanks to Frits van Veen for suggesting this update.
+	</li>
+	<li>Implemented a Goto Coordinates Dialog in the sample app
+	</li>
+	<li>Updated the sample app to use a built in resource for the png 
+	default marker rather than a stand alone png file. Thanks to Frits van Veen 
+	for suggesting this update.</li>
+</ul>
+<p><b>V1.14 (6 February 2011)</b></p>
+<ul>
+	<li>Now includes support for using GPS devices which support the Windows 7 
+	Sensors API in addition to the author's own
+	<a href="http://www.naughter.com/gpscom2.html">GPSCom2</a> library. The only 
+	difference you will see is that any GPS sensor installed will appear in the 
+	GPS Settings dialog. Select the sensor instead of a COM port and the sample 
+	app will now use the specified Windows 7 GPS sensor. This support for the 
+	Windows 7 Sensors API is provided using the author's
+	<a href="http://www.naughter.com/mfcsensor.html">MfcSensor</a> library.</li>
+</ul>
+<p><b>V1.15 (30 April 2011)</b></p>
+<ul>
+	<li>A major addition to the control: Implemented comprehensive support 
+	for Direct2D drawing in COSMCtrl. This support is provided by the new MFC 
+	D2D wrapper classes provided with Visual Studio 2010 SP1. By default this 
+	support is enabled so you will need to have VS 2010 and SP1 installed to 
+	take advantage. If you do not want this you can define COSMCTRL_NOD2D before 
+	pulling in the OSMCtrl classes and the code will fall back to using GDI+. 
+	This new code provides a very good sample to developers who are looking to 
+	migrate their large GDI/GDI+ code bases to D2D as the before and after code 
+	in COSMCtrl can be compared to each other. If you want to exclude D2D from 
+	COSMCtrl define COSMCTRL_NOD2D and the code will fall back to the original 
+	GDI+ drawing logic. Performance testing on my laptop indicates that the 
+	drawing code time has reduced from c. 3 - 4 ms for a full screen redraw down 
+	to c. 0.3 ms i.e. a speed up of 900%!. </li>
+	<li>Updated copyright details. </li>
+	<li>Implemented a &quot;Delta&quot; mode for the control. When this mode is 
+	enabled via SetDeltaMode(TRUE), any newly updated cached local tiles will be 
+	blinked with the old tile it has been replaced with, when you do a refresh/redownload 
+	of the tile </li>
+	<li>In debug mode the code no longer reports any 
+	ERROR_INTERNET_OPERATION_CANCELLED download errors via TRACE. </li>
+	<li>Fixed a bug in the download code where you would get intermittent 
+	download errors because the file is locked because of how GDI+ locks the 
+	file when you open a bitmap from it. </li>
+	<li>Sample app now handles the ISensorEvents::OnLeave event. This 
+	event occurs when your GPS sensor is removed from the system (such as 
+	unplugging the device if it is GPS). The app now closes down GPS mode in the 
+	control if this occurs. </li>
+	<li>The m_Icons member variable in COSMCtrl now maintains COSMCtrlIcon 
+	pointers rather than actual instances. This fixes a bug in the code where 
+	previously it was not clear where ownership of the resources belong to. Now 
+	since they are pointers, client code is responsible for the lifetime of the 
+	icons </li>
+	<li>Fixed a bug in the sample app where the CMySensorEvents::OnDataUpdated 
+	and CMySensorEvents::OnLeave could cause an access violation if called 
+	during shutdown of the sample app. </li>
+	<li>The GPS Location triangle is now drawn using some transparency. </li>
+	<li>Refactored the ancillary &quot;COSMCtrl*&quot; classes which the main 
+	control class depends on. All of these classes are now contained in separate 
+	modules. </li>
+	<li>GDI+ code path which draws fractionally zoomed tiles now uses 
+	in-memory tile cache. </li>
+	<li>When drawing fractionally zoomed tiles, the next zoom level tiles 
+	are now used in preference to the previous zoom level. </li>
+	<li>Reworked tile providers to use a new interface class of IOSMCtrlTileProvider. This allows easier addition of new tile providers.</li>
+	<li>Added support for Mapquest Open Aerial tiles via the new 
+	COSMCtrlMapquestAerialTileProvider class.</li>
+	<li>Optimized ClientToPosition and PositionToClient methods by 
+	allowing them to pass in the client rect. </li>
+	<li>Markers, Polylines, Polygons and circles can now be excluded from hit 
+	testing via a new &quot;m_bHitTest&quot; member variable </li>
+	<li>Fixed a memory leak in SetCacheDirectory. </li>
+	<li>The classes now have support for using WinHTTP instead of Wininet 
+	as the download API. Please note that if you use WinHTTP then the sample app 
+	will not provide Nominatim search and addresss lookup as currently the 
+	CNominatim class only supports Wininet and not WinHTTP. </li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<h2><a name="Future_Enhancements"></a>Future Enhancements</h2>
+
+<p>Here is a list of some of the possible enhancements I am considering for 
+future releases:</p>
+<ul>
+	<li>Enhanced support for displaying GPX files. Should support colorizing of tracks 
+	based on altitude, speed or HDOP. Colors should be based on the standard ROYGBIV 
+	color palette or just a specific color. Color palette should also have an 
+	specific min and max color value. In addition should have setting to specify 
+	the direction of the ROYGBIV color palette to use. Also should setting to 
+	set min and max value to map to the palette. Should also have setting to 
+	specify behaviour of what to do with values which fall outside of the min / 
+	max range values. This will involve extending drawing of polylines to 
+	support per segment attributes</li>
+	<li>Support the GGA sentence in addition to the RMC sentence so that HDOP 
+	values can be logged to GPX.</li>
+	<li>Support a nicer animation for the current GPS position. Something with a 
+	circle to indicate the current HDOP value as well as a expanding 
+	increasingly transparent ring animation would be nice.</li>
+	<li>Support for GeoRSS Simple and GML feeds.</li>
+	<li>Support for KML files.</li>
+	<li>Need to devise mechanism to make markers, polylines &amp; polygon drawing 
+	code virtual at the class instance level.</li>
+	<li>Extend support for Windows 7 Animation API e.g. kinetic dragging.</li>
+	<li>The hit-testing method should support hints, This would allow you to 
+	specify a search order for hit-testing, e.g. for PolylineCreation we would 
+	want PolylineNode to be first search.</li>
+	<li>Support Up not necessarily being North.</li>
+	<li>Provide a simple popup window for markers, polylines, polygons &amp; 
+	circles.</li>
+	<li>A standard Polyline / polygon, marker or circle should allow its 
+	attributes to be modified via a standard dialog. This can then be used by 
+	the GPS tracklog customization feature above.</li>
+    <li>Need to look into allowing drawing at a higher resolution than the client area 
+        so that printing appears more precise.</li>
+	<li>Look into using Wininet / WinHTTP asynchronous mode. This would make 
+	dragging of the map much smoother when blocking problems occur in the 
+	background downloading thread.</li>
+	<li>Look into displaying OSM Copyright details directly on the map rather 
+	than using a Windows SysLink control.</li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<h2><a name="Contact"></a>Contacting the Author</h2>
+
+<p>PJ Naughter<br>
+Email: <a href="mailto:pjna@naughter.com">pjna@naughter.com</a><br>
+Web: <a href="http://www.naughter.com">http://www.naughter.com</a><br>
+30 April 2011</p>
+</body>
+</html>
