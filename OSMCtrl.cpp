@@ -9446,7 +9446,7 @@ afx_msg LRESULT COSMCtrl::OnDraw2D(WPARAM /*wParam*/, LPARAM lParam)
 	CRect rClient;
 	GetClientRect(rClient);
 
-  //Call the helper function to do the heavy lifting
+  //Call the helper function to do the heavy liftin
   Draw(pRenderTarget, rClient, NULL, GetDrawScrollRose(), GetDrawZoomBar(), GetDrawScaleBar());
 
 	return TRUE;
