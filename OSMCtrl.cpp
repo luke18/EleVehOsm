@@ -285,6 +285,7 @@ to maintain a single distribution point for the source code.
 #include <atlimage.h>
 #endif
 #include <afxglobals.h>
+#include <afxrendertarget.h>
 #include "OSMCtrlTimerEventHandler.h"
 
 
@@ -3030,7 +3031,7 @@ BOOL COSMCtrl::HitTest(const CPoint& point, const COSMCtrlPolyline& polyline, co
   {
     //Create the stroke style we need
     CComPtr<ID2D1StrokeStyle> strokeStyle;
-    ID2D1Factory* pFactory = afxGlobalData.GetDirect2dFactory();
+    ID2D1Factory* pFactory = AfxGetD2DState()->GetDirect2dFactory();
     if (pFactory == NULL)
       return FALSE;
     D2D1_STROKE_STYLE_PROPERTIES strokeStyleProperties;
@@ -3160,7 +3161,7 @@ BOOL COSMCtrl::DrawPolyline(CRenderTarget* pRenderTarget, const COSMCtrlPolyline
       
       //Create the stroke style we need
       CComPtr<ID2D1StrokeStyle> strokeStyle;
-      ID2D1Factory* pFactory = afxGlobalData.GetDirect2dFactory();
+      ID2D1Factory* pFactory = AfxGetD2DState()->GetDirect2dFactory();
       if (pFactory == NULL)
         return FALSE;
       D2D1_STROKE_STYLE_PROPERTIES strokeStyleProperties;
@@ -3375,7 +3376,7 @@ BOOL COSMCtrl::DrawPolygon(CRenderTarget* pRenderTarget, const COSMCtrlPolygon& 
     
     //Create the stroke style we need
     CComPtr<ID2D1StrokeStyle> strokeStyle;
-    ID2D1Factory* pFactory = afxGlobalData.GetDirect2dFactory();
+    ID2D1Factory* pFactory = AfxGetD2DState()->GetDirect2dFactory();
     if (pFactory == NULL)
       return FALSE;
     D2D1_STROKE_STYLE_PROPERTIES strokeStyleProperties;
@@ -3502,7 +3503,7 @@ BOOL COSMCtrl::HitTest(const CPoint& point, const COSMCtrlPolygon& polygon, cons
 
       //Create the stroke style we need
       CComPtr<ID2D1StrokeStyle> strokeStyle;
-      ID2D1Factory* pFactory = afxGlobalData.GetDirect2dFactory();
+      ID2D1Factory* pFactory = AfxGetD2DState()->GetDirect2dFactory();
       if (pFactory == NULL)
         return FALSE;
       D2D1_STROKE_STYLE_PROPERTIES strokeStyleProperties;
@@ -3739,7 +3740,7 @@ COSMCtrl::MapItem COSMCtrl::HitTest(const CPoint& point, const COSMCtrlCircle& c
   {
     //Create the stroke style we need
     CComPtr<ID2D1StrokeStyle> strokeStyle;
-    ID2D1Factory* pFactory = afxGlobalData.GetDirect2dFactory();
+    ID2D1Factory* pFactory = AfxGetD2DState()->GetDirect2dFactory();
     if (pFactory == NULL)
       return None;
 
@@ -3880,7 +3881,7 @@ BOOL COSMCtrl::DrawCircle(CRenderTarget* pRenderTarget, const COSMCtrlCircle& ci
     
     //Create the stroke style we need
     CComPtr<ID2D1StrokeStyle> strokeStyle;
-    ID2D1Factory* pFactory = afxGlobalData.GetDirect2dFactory();
+    ID2D1Factory* pFactory = AfxGetD2DState()->GetDirect2dFactory();
     if (pFactory == NULL)
       return FALSE;
     //Note we hardcode most of the circle stroke properties because it does not make sense to expose
@@ -4785,7 +4786,7 @@ BOOL COSMCtrl::DrawGPSTrackTriangle(CRenderTarget* pRenderTarget, const CRect& r
       D2D1_MATRIX_3X2_F oldMatrix;
       pRenderTarget->GetTransform(&oldMatrix);
       D2D1_MATRIX_3X2_F rotateMatrix;
-      if (FAILED(afxGlobalData.D2D1MakeRotateMatrix(static_cast<FLOAT>(node.m_Position.m_fBearing), ptPosition, &rotateMatrix)))
+      if (FAILED(AfxGetD2DState()->D2D1MakeRotateMatrix(static_cast<FLOAT>(node.m_Position.m_fBearing), ptPosition, &rotateMatrix)))
         return FALSE;
       pRenderTarget->SetTransform(rotateMatrix);
       if (m_bGPSFix)
@@ -5481,7 +5482,7 @@ HRESULT COSMCtrl::Draw(CDC* pDC, const CRect& rSource, const CRect* prDest, BOOL
 
   //Create the WICBitmap which we will use as the backing for the rendering
   CComPtr<IWICBitmap> wicBitmap;
-  IWICImagingFactory* pImageFactory = afxGlobalData.GetWICFactory();
+  IWICImagingFactory* pImageFactory = AfxGetD2DState()->GetWICFactory();
   if (pImageFactory == NULL)
     return E_POINTER;
   HRESULT hr = pImageFactory->CreateBitmap(rSource.Width(), rSource.Height(), GUID_WICPixelFormat32bppBGR, WICBitmapCacheOnLoad, &wicBitmap);
@@ -5492,7 +5493,7 @@ HRESULT COSMCtrl::Draw(CDC* pDC, const CRect& rSource, const CRect* prDest, BOOL
   }
 
   //Get the D2D factory
-  ID2D1Factory* pD2DFactory = afxGlobalData.GetDirect2dFactory();
+  ID2D1Factory* pD2DFactory = AfxGetD2DState()->GetDirect2dFactory();
   if (pD2DFactory == NULL)
   {
     TRACE(_T("COSMCtrl::Draw, No D2D factory available\n"));
