@@ -11,7 +11,7 @@ class COSMCtrlAppApp : public CWinApp
 public:
 	COSMCtrlAppApp();
 
-// Overrides
+
 public:
 	virtual BOOL InitInstance();
 
