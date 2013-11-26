@@ -1206,7 +1206,7 @@ void COSMCtrl::OnTimer(UINT_PTR nIDEvent)
       CString sMemFile(GetFileForMemoryCache(sFile));
       if (sMemFile.GetLength())
       {
-        //Load the bitmap
+        //Load the bitmap/
         tileFound.m_pBitmap = new CD2DBitmap(pRenderTarget, sMemFile);
         if (SUCCEEDED(tileFound.m_pBitmap->Create(pRenderTarget)))
           bUpdatedOK = TRUE;
