@@ -219,3 +219,4 @@ inline COSMCtrlAppDoc* COSMCtrlAppView::GetDocument() const
    { return reinterpret_cast<COSMCtrlAppDoc*>(m_pDocument); }
 #endif
 
+//haha
