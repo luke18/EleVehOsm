@@ -822,9 +822,11 @@
     <ClCompile Include="OSMCtrlPolygon.cpp" />
     <ClCompile Include="OSMCtrlPolyline.cpp" />
     <ClCompile Include="OSMCtrlPosition.cpp" />
+    <ClCompile Include="OSMCtrlStation.cpp" />
     <ClCompile Include="OSMCtrlTimerEventHandler.cpp" />
     <ClCompile Include="SearchDlg.cpp" />
     <ClCompile Include="SearchResultsDlg.cpp" />
+    <ClCompile Include="StationDialog.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug (GDI+)|Win32'">Create</PrecompiledHeader>
@@ -869,11 +871,13 @@
     <ClInclude Include="OSMCtrlPolygon.h" />
     <ClInclude Include="OSMCtrlPolyline.h" />
     <ClInclude Include="OSMCtrlPosition.h" />
+    <ClInclude Include="OSMCtrlStation.h" />
     <ClInclude Include="OSMCtrlTileProviders.h" />
     <ClInclude Include="OSMCtrlTimerEventHandler.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SearchDlg.h" />
     <ClInclude Include="SearchResultsDlg.h" />
+    <ClInclude Include="StationDialog.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TilePropertiesDlg.h" />
     <ClInclude Include="WinHttp.h" />

@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by OSMCtrlApp.rc
+// Microsoft Visual C++ 生成的包含文件。
+// 供 OSMCtrlApp.rc 使用
 //
 #define IDD_ABOUTBOX                    100
 #define IDD_TILE_PROPERTIES             101
@@ -19,7 +19,9 @@
 #define IDS_OSMCTRL_TILE_NOT_AVAILABLE  133
 #define IDD_GOTO_COORDINATES            133
 #define IDS_OSMCTRL_NO_VALID_SELECTION  134
+#define IDD_DIALOG1                     134
 #define IDS_OSMCTRL_TILE_NOT_AVAILABLE2 135
+#define IDD_DIALOG2                     135
 #define IDS_OSMCTRL_MAP_OPERATIONS_UPDATE_ZOOM3 136
 #define IDS_OSMCTRL_MAP_OPERATIONS_UPDATE_ZOOM2 137
 #define IDS_CLICK_ON_MAP_FOR_REFRESHTILE 138
@@ -61,7 +63,9 @@
 #define IDC_SEARCH                      1021
 #define IDC_LONGITUDE_DEGREES           1022
 #define IDC_LONGITUDE_MINUTES           1023
+#define IDC_EDIT1                       1023
 #define IDC_LONGITUDE_SECONDS           1024
+#define IDC_EDIT2                       1024
 #define IDC_LATITUDE_DEGREES            1025
 #define IDC_LATITUDE_MINUTES            1026
 #define IDC_LATITUDE_SECONDS            1027
@@ -111,6 +115,7 @@
 #define ID_DRAW_MARKER                  32822
 #define ID_DRAW_SELECTIONRECTANGLE      32824
 #define ID_VIEW_MAPOPERATIONS           32827
+#define ID_DRAW_STATION                 32828
 #define ID_DRAW_CIRCLE                  32829
 #define ID_VIEW_DRAWCENTERCROSSHAIRS    32830
 #define ID_VIEW_GPSSETTINGS             32831
@@ -131,9 +136,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        133
+#define _APS_NEXT_RESOURCE_VALUE        136
 #define _APS_NEXT_COMMAND_VALUE         32853
-#define _APS_NEXT_CONTROL_VALUE         1023
+#define _APS_NEXT_CONTROL_VALUE         1025
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

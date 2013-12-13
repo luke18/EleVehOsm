@@ -1,5 +1,5 @@
 #pragma once
-
+#include "OSMCtrlStation.h"
 
 class COSMCtrlAppDoc : public CDocument
 {
@@ -9,6 +9,7 @@ protected: // create from serialization only
 
 // Attributes
 public:
+	COSMCtrlStation m_Stations;
 
 // Operations
 public:

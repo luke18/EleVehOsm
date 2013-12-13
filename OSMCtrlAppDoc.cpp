@@ -30,14 +30,17 @@ BOOL COSMCtrlAppDoc::OnNewDocument()
 
 void COSMCtrlAppDoc::Serialize(CArchive& ar)
 {
-	if (ar.IsStoring())
-	{
-		// TODO: add storing code here
-	}
-	else
-	{
-		// TODO: add loading code here
-	}
+
+	//if (ar.IsStoring())
+	//{
+	//	 //TODO: add storing code here
+	//}
+	//else
+	//{
+	//	 //TODO: add loading code here
+	//}
+	m_Stations.Serialize(ar);
+	UpdateAllViews(NULL);
 }
 
 #ifdef _DEBUG

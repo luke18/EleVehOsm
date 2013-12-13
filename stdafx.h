@@ -66,6 +66,7 @@
 #include <atlimage.h>
 #include <sensors.h>
 #include <sensorsapi.h>
+#include <afxcontrolbars.h>
 
 
 #ifdef _UNICODE

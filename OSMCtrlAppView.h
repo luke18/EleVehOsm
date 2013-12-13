@@ -24,6 +24,8 @@ protected: // create from serialization only
 public:
 	COSMCtrlAppDoc* GetDocument() const;
 	COSMCtrl& GetCtrl() { return m_ctrlOSM; };
+	double m_outEdit2;
+	double m_outEdit1;
 
 // Operations
 public:
@@ -194,6 +196,7 @@ protected:
   afx_msg void OnUpdateDrawPolyline(CCmdUI* pCmdUI);
   afx_msg void OnDrawMarker();
   afx_msg void OnUpdateDrawMarker(CCmdUI* pCmdUI);
+  afx_msg void OnDrawStation();
   afx_msg void OnDrawSelectionRectangle();
   afx_msg void OnUpdateDrawSelectionRectangle(CCmdUI* pCmdUI);
   afx_msg void OnViewMapOperations();
@@ -219,4 +222,3 @@ inline COSMCtrlAppDoc* COSMCtrlAppView::GetDocument() const
    { return reinterpret_cast<COSMCtrlAppDoc*>(m_pDocument); }
 #endif
 
-//haha

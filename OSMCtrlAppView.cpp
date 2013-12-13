@@ -12,6 +12,7 @@
 #include "SearchResultsDlg.h"
 #endif
 #include "GotoCoordinatesDlg.h"
+#include "StationDialog.h"
 
 
 #ifdef _DEBUG
@@ -173,6 +174,7 @@ BEGIN_MESSAGE_MAP(COSMCtrlAppView, CView)
   ON_COMMAND(ID_DRAW_POLYLINE, &COSMCtrlAppView::OnDrawPolyline)
   ON_UPDATE_COMMAND_UI(ID_DRAW_POLYLINE, &COSMCtrlAppView::OnUpdateDrawPolyline)
   ON_COMMAND(ID_DRAW_MARKER, &COSMCtrlAppView::OnDrawMarker)
+  ON_COMMAND(ID_DRAW_STATION, &COSMCtrlAppView::OnDrawStation)
   ON_UPDATE_COMMAND_UI(ID_DRAW_MARKER, &COSMCtrlAppView::OnUpdateDrawMarker)
   ON_COMMAND(ID_DRAW_SELECTIONRECTANGLE, &COSMCtrlAppView::OnDrawSelectionRectangle)
   ON_UPDATE_COMMAND_UI(ID_DRAW_SELECTIONRECTANGLE, &COSMCtrlAppView::OnUpdateDrawSelectionRectangle)
@@ -218,8 +220,7 @@ BOOL COSMCtrlAppView::PreCreateWindow(CREATESTRUCT& cs)
 }
 
 void COSMCtrlAppView::OnDraw(CDC* /*pDC*/)
-{
-  //Nothing to do
+{	
 }
 
 BOOL COSMCtrlAppView::OnPreparePrinting(CPrintInfo* pInfo)
@@ -1159,6 +1160,38 @@ void COSMCtrlAppView::OnDrawMarker()
 void COSMCtrlAppView::OnUpdateDrawMarker(CCmdUI* pCmdUI)
 {
   pCmdUI->SetCheck(m_ctrlOSM.GetMapMode() == COSMCtrl::MarkerCreation);
+}
+
+void COSMCtrlAppView::OnDrawStation()
+{
+	CString m_info;
+	StationDialog dlg; // define dialog object
+	int result = dlg.DoModal();  // show and run the dialog
+
+	if(result == IDOK)
+	{
+		m_outEdit1 = dlg.m_Edit1;
+		m_outEdit2 = dlg.m_Edit2;
+		COSMCtrlAppDoc*pDoc = GetDocument();
+		pDoc->m_Stations.AddStation(m_outEdit1, m_outEdit2); // write into doc
+
+		
+		int size = pDoc->m_Stations.GetStationCount(); // get size of array in doc
+		//add station one by one
+		for(int i = 0;i<size;i++)
+		{
+			StationStruct station;
+			pDoc->m_Stations.GetStation(i,&station);
+			COSMCtrlMarker coWexfordMarker;
+			coWexfordMarker.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
+			coWexfordMarker.m_sToolTipText = _T("The author PJ lives somewhere in County Wexford, Ireland!. You can drag me!");
+			coWexfordMarker.m_nIconIndex = m_nDefaultMarkerIconIndex;
+			coWexfordMarker.m_nMinZoomLevel = 0;
+			coWexfordMarker.m_nMaxZoomLevel = 10;
+			coWexfordMarker.m_bDraggable = TRUE; //Allow the marker to be draggable
+			m_ctrlOSM.m_Markers.Add(coWexfordMarker);
+		}
+	}
 }
 
 void COSMCtrlAppView::OnDrawSelectionRectangle()
