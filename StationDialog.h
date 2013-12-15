@@ -21,4 +21,6 @@ protected:
 	//void afx_msg OnOK();  // overide of OnOK
 
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnEnChangeEdit1();
 };

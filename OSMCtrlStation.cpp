@@ -49,6 +49,7 @@ void COSMCtrlStation::Serialize(CArchive&ar)
 	}
 	else  // read data of station
 	{
+		m_stationArray.RemoveAll(); // delete exsiting objects
 		int size;
 		ar >> size;
 		for(int i = 0;i < size;i++)

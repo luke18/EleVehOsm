@@ -83,6 +83,8 @@ BEGIN_MESSAGE_MAP(COSMCtrlAppView, CView)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
   ON_WM_CREATE()
   ON_WM_ERASEBKGND()
+  ON_COMMAND(ID_FILE_OPEN, &COSMCtrlAppView::OnFileOpen)
+  ON_COMMAND(ID_FILE_SAVE, &COSMCtrlAppView::OnFileSave)
   ON_COMMAND(ID_ZOOM_0, &COSMCtrlAppView::OnZoom0)
   ON_COMMAND(ID_ZOOM_1, &COSMCtrlAppView::OnZoom1)
   ON_COMMAND(ID_ZOOM_2, &COSMCtrlAppView::OnZoom2)
@@ -548,6 +550,51 @@ BOOL COSMCtrlAppView::OnEraseBkgnd(CDC* /*pDC*/)
 {
   //Avoid flicker by doing nothing
   return TRUE;
+}
+
+//Function for file open
+void COSMCtrlAppView::OnFileOpen()
+{
+	this->UpdateData();
+	
+	CFile f;
+	char strFilter[] = {"EVO Files (*.evo)|*.evo|All Files(*.*)|*.*||"};
+	CFileDialog FileDlg(TRUE, ".evo", NULL, 0, strFilter);
+	if(FileDlg.DoModal() == IDOK)
+	{
+		if(f.Open(FileDlg.GetPathName(), CFile::modeRead) == FALSE)
+			return;
+		CArchive ar(&f, CArchive::load);
+		COSMCtrlAppDoc *pDoc = GetDocument();
+		pDoc->Serialize(ar);
+		ar.Close();
+	}
+	else 
+		return;
+	f.Close();
+	this->UpdateData(FALSE);
+	COSMCtrlAppView::UpdateStations(); // show marker on map
+}
+
+//Function for file save
+void COSMCtrlAppView::OnFileSave()
+{
+	this->UpdateData();
+	CFile f;
+	
+	char strFilter[] = {"EVO Files (*.evo)|*.evo|All Files(*.*)|*.*||"};
+	CFileDialog FileDlg(FALSE, ".evo", NULL, 0, strFilter);
+	if(FileDlg.DoModal() == IDOK)
+	{
+		f.Open(FileDlg.GetPathName(), CFile::modeCreate | CFile::modeWrite);
+		CArchive ar(&f, CArchive::store);
+		COSMCtrlAppDoc *pDoc = GetDocument();
+		pDoc->Serialize(ar);
+		ar.Close();
+	}
+	else
+		return;
+	f.Close();
 }
 
 void COSMCtrlAppView::OnZoom0()
@@ -1166,6 +1213,8 @@ void COSMCtrlAppView::OnDrawStation()
 {
 	CString m_info;
 	StationDialog dlg; // define dialog object
+	dlg.m_Edit1 = 0;  // init value
+	dlg.m_Edit2 = 0;
 	int result = dlg.DoModal();  // show and run the dialog
 
 	if(result == IDOK)
@@ -1174,23 +1223,28 @@ void COSMCtrlAppView::OnDrawStation()
 		m_outEdit2 = dlg.m_Edit2;
 		COSMCtrlAppDoc*pDoc = GetDocument();
 		pDoc->m_Stations.AddStation(m_outEdit1, m_outEdit2); // write into doc
-
+		UpdateStations(); // // Fetch stations in doc and show on map
 		
-		int size = pDoc->m_Stations.GetStationCount(); // get size of array in doc
-		//add station one by one
-		for(int i = 0;i<size;i++)
-		{
-			StationStruct station;
-			pDoc->m_Stations.GetStation(i,&station);
-			COSMCtrlMarker coWexfordMarker;
-			coWexfordMarker.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
-			coWexfordMarker.m_sToolTipText = _T("The author PJ lives somewhere in County Wexford, Ireland!. You can drag me!");
-			coWexfordMarker.m_nIconIndex = m_nDefaultMarkerIconIndex;
-			coWexfordMarker.m_nMinZoomLevel = 0;
-			coWexfordMarker.m_nMaxZoomLevel = 10;
-			coWexfordMarker.m_bDraggable = TRUE; //Allow the marker to be draggable
-			m_ctrlOSM.m_Markers.Add(coWexfordMarker);
-		}
+	}
+}
+
+void COSMCtrlAppView::UpdateStations() 
+{
+	m_ctrlOSM.m_Markers.RemoveAll();
+	COSMCtrlAppDoc*pDoc = GetDocument();
+	int size = pDoc->m_Stations.GetStationCount(); // get size of array in doc
+	//add station one by one
+	for(int i = 0; i<size; i++) {
+		StationStruct station;
+		pDoc->m_Stations.GetStation(i,&station);
+		COSMCtrlMarker coWexfordMarker;
+		coWexfordMarker.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
+		coWexfordMarker.m_sToolTipText = _T("The author PJ lives somewhere in County Wexford, Ireland!. You can drag me!");
+		coWexfordMarker.m_nIconIndex = m_nDefaultMarkerIconIndex;
+		coWexfordMarker.m_nMinZoomLevel = 0;
+		coWexfordMarker.m_nMaxZoomLevel = 10;
+		coWexfordMarker.m_bDraggable = TRUE; //Allow the marker to be draggable
+		m_ctrlOSM.m_Markers.Add(coWexfordMarker);
 	}
 }
 

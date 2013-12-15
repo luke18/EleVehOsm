@@ -72,6 +72,7 @@ protected:
   void DoAddressLookup(CPoint point);
   void DoRefreshTile(CPoint point);
   void DoTileProperties(CPoint point);
+  void UpdateStations(); // Fetch stations in doc and show on map
 #ifdef COSMCTRL_NOD2D
   HRESULT LoadResourceImage(LPCTSTR pName, LPCTSTR pType, HMODULE hInst, Gdiplus::Image*& pImage);
 #endif
@@ -104,6 +105,8 @@ protected:
 	
   afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
   afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+  afx_msg void OnFileOpen();
+  afx_msg void OnFileSave();
   afx_msg void OnZoom0();
   afx_msg void OnZoom1();
   afx_msg void OnZoom2();

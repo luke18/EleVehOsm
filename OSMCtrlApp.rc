@@ -67,212 +67,6 @@ END
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_EIRE
 #pragma code_page(1252)
 
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE 
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE 
-BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE 
-BEGIN
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
-    "#define _AFX_NO_OLE_RESOURCES\r\n"
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
-    "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENI)\r\n"
-    "LANGUAGE 9, 6\r\n"
-    "#pragma code_page(1252)\r\n"
-    "#include ""res\\OSMCtrlApp.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
-    "#include ""afxres.rc""         // Standard components\r\n"
-    "#include ""afxprint.rc""       // printing/print preview resources\r\n"
-    "#endif\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\OSMCtrlApp.ico"
-IDR_OSMCtrlAppTYPE      ICON                    "res\\OSMCtrlAppDoc.ico"
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Toolbar
-//
-
-IDR_MAINFRAME TOOLBAR 16, 15
-BEGIN
-    BUTTON      ID_DRAW_NORMAL
-    BUTTON      ID_DRAW_SELECTIONRECTANGLE
-    BUTTON      ID_DRAW_MARKER
-    BUTTON      ID_DRAW_POLYLINE
-    BUTTON      ID_DRAW_POLYGON
-    BUTTON      ID_DRAW_CIRCLE
-    SEPARATOR
-    BUTTON      ID_FILE_PRINT
-    BUTTON      ID_APP_ABOUT
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Menu
-//
-
-IDR_MAINFRAME MENU
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Import GPX File...",         ID_FILE_IMPORTGPXFILE
-        MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
-        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
-        MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        POPUP "Zoom"
-        BEGIN
-            MENUITEM "0",                           ID_ZOOM_0
-            MENUITEM "1",                           ID_ZOOM_1
-            MENUITEM "2",                           ID_ZOOM_2
-            MENUITEM "3",                           ID_ZOOM_3
-            MENUITEM "4",                           ID_ZOOM_4
-            MENUITEM "5",                           ID_ZOOM_5
-            MENUITEM "6",                           ID_ZOOM_6
-            MENUITEM "7",                           ID_ZOOM_7
-            MENUITEM "8",                           ID_ZOOM_8
-            MENUITEM "9",                           ID_ZOOM_9
-            MENUITEM "10",                          ID_ZOOM_10
-            MENUITEM "11",                          ID_ZOOM_11
-            MENUITEM "12",                          ID_ZOOM_12
-            MENUITEM "13",                          ID_ZOOM_13
-            MENUITEM "14",                          ID_ZOOM_14
-            MENUITEM "15",                          ID_ZOOM_15
-            MENUITEM "16",                          ID_ZOOM_16
-            MENUITEM "17",                          ID_ZOOM_17
-            MENUITEM "18",                          ID_ZOOM_18
-        END
-        POPUP "Providers"
-        BEGIN
-            MENUITEM "Mapnik",                      ID_PROVIDERS_MAPNIK
-            MENUITEM "Osmarender",                  ID_PROVIDERS_OSMARENDER
-            MENUITEM "Cyclemap",                    ID_PROVIDERS_CYCLEMAP
-            MENUITEM "Mapquest OSM",                ID_PROVIDERS_MAPQUEST_OSM
-            MENUITEM "Mapquest Open Aerial",        ID_PROVIDERS_MAPQUEST_OPEN_AERIAL
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "Clear Cache",                 ID_VIEW_CLEARCACHE
-        MENUITEM "View Tile Properties\tAlt+Enter", ID_VIEW_TILEPROPERTIES
-        MENUITEM "Refresh\tF5",                 ID_VIEW_REFRESH
-        MENUITEM "Refresh Tile",                ID_VIEW_REFRESHTILE
-        MENUITEM "Map Operations",              ID_VIEW_MAPOPERATIONS
-        MENUITEM "GPS Settings",                ID_VIEW_GPSSETTINGS
-        MENUITEM "Address Lookup",              ID_VIEW_ADDRESSLOOKUP
-        MENUITEM "Goto Coordinates\tCtrl+G",    ID_VIEW_GOTOCOORDINATES
-        MENUITEM "Search...\tCtrl+F",           ID_VIEW_SEARCH
-        MENUITEM SEPARATOR
-        MENUITEM "Auto Download Tiles",         ID_VIEW_AUTODOWNLOADTILES
-        MENUITEM "Download Tiles from center outwards", ID_VIEW_DOWNLOADTILESFROMCENTEROUTWARDS
-        MENUITEM "Draw Scroll Rose",            ID_VIEW_DRAWSCROLLROSE
-        MENUITEM "Draw Zoom Bar",               ID_VIEW_DRAWZOOMBAR
-        MENUITEM "Draw Center Crosshairs",      ID_VIEW_DRAWCENTERCROSSHAIRS
-        MENUITEM "Draw Zoom Bar as Slider control", ID_VIEW_DRAWZOOMBARASSLIDERCONTROL
-        MENUITEM "Use Transparency for Zoom Bar", ID_VIEW_USETRANSPARENCYFORZOOMBAR
-        MENUITEM "Draw Scale Bar",              ID_VIEW_DRAWSCALEBAR
-        MENUITEM "Draw Tile Outlines",          ID_VIEW_DRAWTILEOUTLINES
-        MENUITEM "Allow Drag",                  ID_VIEW_ALLOWDRAG
-        MENUITEM "Allow Keyboard",              ID_VIEW_ALLOWKEYBOARD
-        MENUITEM "Allow Mouse Zoom",            ID_VIEW_ALLOWMOUSEZOOM
-        MENUITEM "Allow Double Click Zoom",     ID_VIEW_ALLOWDOUBLECLICKZOOM
-        MENUITEM "Allow Previous Zoom Stretch", ID_VIEW_ALLOWPREVIOUSZOOMSTRETCH
-        MENUITEM "Allow Next Zoom Squeeze",     ID_VIEW_ALLOWNEXTZOOMSQUEEZE
-        MENUITEM "Delta Mode",                  ID_VIEW_DELTAMODE
-        MENUITEM "Allow Animations",            ID_VIEW_ALLOWANIMATIONS
-        MENUITEM SEPARATOR
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Draw"
-    BEGIN
-        MENUITEM "&Normal",                     ID_DRAW_NORMAL
-        MENUITEM "&Selection Rectangle",        ID_DRAW_SELECTIONRECTANGLE
-        MENUITEM "&Marker",                     ID_DRAW_MARKER
-        MENUITEM "Polygon",                     ID_DRAW_POLYGON
-        MENUITEM "Poly&line",                   ID_DRAW_POLYLINE
-        MENUITEM "&Circle",                     ID_DRAW_CIRCLE
-        MENUITEM "&Station",                    ID_DRAW_STATION
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About OSMCtrlApp...",        ID_APP_ABOUT
-    END
-END
-
-IDR_POPUP_VIEW MENU
-BEGIN
-    POPUP "___"
-    BEGIN
-        MENUITEM "Clear Cache",                 ID_VIEW_CLEARCACHE
-        MENUITEM "View Tile Properties\tAlt+Enter", ID_VIEW_TILEPROPERTIES
-        MENUITEM "Refresh\tF5",                 ID_VIEW_REFRESH
-        MENUITEM "Refresh Tile",                ID_VIEW_REFRESHTILE
-        MENUITEM "Map Operations",              ID_VIEW_MAPOPERATIONS
-        MENUITEM "GPS Settings",                ID_VIEW_GPSSETTINGS
-        MENUITEM "Address Lookup",              ID_VIEW_ADDRESSLOOKUP
-        MENUITEM "Goto Coordinates\tCtrl+G",    ID_VIEW_GOTOCOORDINATES
-        MENUITEM "Search...\tCtrl+F",           ID_VIEW_SEARCH
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Accelerator
-//
-
-IDR_MAINFRAME ACCELERATORS
-BEGIN
-    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
-    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
-    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
-    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
-    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
-    "G",            ID_VIEW_GOTOCOORDINATES, VIRTKEY, CONTROL, NOINVERT
-    VK_F5,          ID_VIEW_REFRESH,        VIRTKEY, NOINVERT
-    "F",            ID_VIEW_SEARCH,         VIRTKEY, CONTROL, NOINVERT
-    VK_F3,          ID_VIEW_SEARCH,         VIRTKEY, NOINVERT
-    VK_RETURN,      ID_VIEW_TILEPROPERTIES, VIRTKEY, ALT, NOINVERT
-END
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
@@ -398,45 +192,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Version
-//
-
-VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,15,0
- PRODUCTVERSION 1,0,15,0
- FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x4L
- FILETYPE 0x1L
- FILESUBTYPE 0x0L
-BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040904e4"
-        BEGIN
-            VALUE "CompanyName", "PJ Naughter"
-            VALUE "FileDescription", "OSMCtrlApp"
-            VALUE "FileVersion", "1.0.15.0"
-            VALUE "InternalName", "OSMCtrlApp.exe"
-            VALUE "LegalCopyright", "Copyright (c) PJ Naughter 2009 - 2011.  All rights reserved."
-            VALUE "OriginalFilename", "OSMCtrlApp.exe"
-            VALUE "ProductName", "OSMCtrlApp"
-            VALUE "ProductVersion", "1.0.15.0"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x409, 1252
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // DESIGNINFO
 //
 
@@ -500,6 +255,253 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENI)\r\n"
+    "LANGUAGE 9, 6\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\OSMCtrlApp.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#include ""afxprint.rc""       // printing/print preview resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\OSMCtrlApp.ico"
+IDR_OSMCtrlAppTYPE      ICON                    "res\\OSMCtrlAppDoc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 16, 15
+BEGIN
+    BUTTON      ID_DRAW_NORMAL
+    BUTTON      ID_DRAW_SELECTIONRECTANGLE
+    BUTTON      ID_DRAW_MARKER
+    BUTTON      ID_DRAW_POLYLINE
+    BUTTON      ID_DRAW_POLYGON
+    BUTTON      ID_DRAW_CIRCLE
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Import GPX File...",         ID_FILE_IMPORTGPXFILE
+        MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
+        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
+        MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
+        MENUITEM "Open\tCtrl+O",				ID_FILE_OPEN
+		MENUITEM "Save\tCtrl+S",				ID_FILE_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        POPUP "Zoom"
+        BEGIN
+            MENUITEM "0",                           ID_ZOOM_0
+            MENUITEM "1",                           ID_ZOOM_1
+            MENUITEM "2",                           ID_ZOOM_2
+            MENUITEM "3",                           ID_ZOOM_3
+            MENUITEM "4",                           ID_ZOOM_4
+            MENUITEM "5",                           ID_ZOOM_5
+            MENUITEM "6",                           ID_ZOOM_6
+            MENUITEM "7",                           ID_ZOOM_7
+            MENUITEM "8",                           ID_ZOOM_8
+            MENUITEM "9",                           ID_ZOOM_9
+            MENUITEM "10",                          ID_ZOOM_10
+            MENUITEM "11",                          ID_ZOOM_11
+            MENUITEM "12",                          ID_ZOOM_12
+            MENUITEM "13",                          ID_ZOOM_13
+            MENUITEM "14",                          ID_ZOOM_14
+            MENUITEM "15",                          ID_ZOOM_15
+            MENUITEM "16",                          ID_ZOOM_16
+            MENUITEM "17",                          ID_ZOOM_17
+            MENUITEM "18",                          ID_ZOOM_18
+        END
+        POPUP "Providers"
+        BEGIN
+            MENUITEM "Mapnik",                      ID_PROVIDERS_MAPNIK
+            MENUITEM "Osmarender",                  ID_PROVIDERS_OSMARENDER
+            MENUITEM "Cyclemap",                    ID_PROVIDERS_CYCLEMAP
+            MENUITEM "Mapquest OSM",                ID_PROVIDERS_MAPQUEST_OSM
+            MENUITEM "Mapquest Open Aerial",        ID_PROVIDERS_MAPQUEST_OPEN_AERIAL
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Clear Cache",                 ID_VIEW_CLEARCACHE
+        MENUITEM "View Tile Properties\tAlt+Enter", ID_VIEW_TILEPROPERTIES
+        MENUITEM "Refresh\tF5",                 ID_VIEW_REFRESH
+        MENUITEM "Refresh Tile",                ID_VIEW_REFRESHTILE
+        MENUITEM "Map Operations",              ID_VIEW_MAPOPERATIONS
+        MENUITEM "GPS Settings",                ID_VIEW_GPSSETTINGS
+        MENUITEM "Address Lookup",              ID_VIEW_ADDRESSLOOKUP
+        MENUITEM "Goto Coordinates\tCtrl+G",    ID_VIEW_GOTOCOORDINATES
+        MENUITEM "Search...\tCtrl+F",           ID_VIEW_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM "Auto Download Tiles",         ID_VIEW_AUTODOWNLOADTILES
+        MENUITEM "Download Tiles from center outwards", ID_VIEW_DOWNLOADTILESFROMCENTEROUTWARDS
+        MENUITEM "Draw Scroll Rose",            ID_VIEW_DRAWSCROLLROSE
+        MENUITEM "Draw Zoom Bar",               ID_VIEW_DRAWZOOMBAR
+        MENUITEM "Draw Center Crosshairs",      ID_VIEW_DRAWCENTERCROSSHAIRS
+        MENUITEM "Draw Zoom Bar as Slider control", ID_VIEW_DRAWZOOMBARASSLIDERCONTROL
+        MENUITEM "Use Transparency for Zoom Bar", ID_VIEW_USETRANSPARENCYFORZOOMBAR
+        MENUITEM "Draw Scale Bar",              ID_VIEW_DRAWSCALEBAR
+        MENUITEM "Draw Tile Outlines",          ID_VIEW_DRAWTILEOUTLINES
+        MENUITEM "Allow Drag",                  ID_VIEW_ALLOWDRAG
+        MENUITEM "Allow Keyboard",              ID_VIEW_ALLOWKEYBOARD
+        MENUITEM "Allow Mouse Zoom",            ID_VIEW_ALLOWMOUSEZOOM
+        MENUITEM "Allow Double Click Zoom",     ID_VIEW_ALLOWDOUBLECLICKZOOM
+        MENUITEM "Allow Previous Zoom Stretch", ID_VIEW_ALLOWPREVIOUSZOOMSTRETCH
+        MENUITEM "Allow Next Zoom Squeeze",     ID_VIEW_ALLOWNEXTZOOMSQUEEZE
+        MENUITEM "Delta Mode",                  ID_VIEW_DELTAMODE
+        MENUITEM "Allow Animations",            ID_VIEW_ALLOWANIMATIONS
+        MENUITEM SEPARATOR
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Draw"
+    BEGIN
+        MENUITEM "&Normal",                     ID_DRAW_NORMAL
+        MENUITEM "&Selection Rectangle",        ID_DRAW_SELECTIONRECTANGLE
+        MENUITEM "&Marker",                     ID_DRAW_MARKER
+        MENUITEM "Polygon",                     ID_DRAW_POLYGON
+        MENUITEM "Poly&line",                   ID_DRAW_POLYLINE
+        MENUITEM "&Circle",                     ID_DRAW_CIRCLE
+        MENUITEM "&Station",                    ID_DRAW_STATION
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About OSMCtrlApp...",        ID_APP_ABOUT
+    END
+END
+
+IDR_POPUP_VIEW MENU
+BEGIN
+    POPUP "___"
+    BEGIN
+        MENUITEM "Clear Cache",                 ID_VIEW_CLEARCACHE
+        MENUITEM "View Tile Properties\tAlt+Enter", ID_VIEW_TILEPROPERTIES
+        MENUITEM "Refresh\tF5",                 ID_VIEW_REFRESH
+        MENUITEM "Refresh Tile",                ID_VIEW_REFRESHTILE
+        MENUITEM "Map Operations",              ID_VIEW_MAPOPERATIONS
+        MENUITEM "GPS Settings",                ID_VIEW_GPSSETTINGS
+        MENUITEM "Address Lookup",              ID_VIEW_ADDRESSLOOKUP
+        MENUITEM "Goto Coordinates\tCtrl+G",    ID_VIEW_GOTOCOORDINATES
+        MENUITEM "Search...\tCtrl+F",           ID_VIEW_SEARCH
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+    "G",            ID_VIEW_GOTOCOORDINATES, VIRTKEY, CONTROL, NOINVERT
+    VK_F5,          ID_VIEW_REFRESH,        VIRTKEY, NOINVERT
+    "F",            ID_VIEW_SEARCH,         VIRTKEY, CONTROL, NOINVERT
+    VK_F3,          ID_VIEW_SEARCH,         VIRTKEY, NOINVERT
+    VK_RETURN,      ID_VIEW_TILEPROPERTIES, VIRTKEY, ALT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,15,0
+ PRODUCTVERSION 1,0,15,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "PJ Naughter"
+            VALUE "FileDescription", "OSMCtrlApp"
+            VALUE "FileVersion", "1.0.15.0"
+            VALUE "InternalName", "OSMCtrlApp.exe"
+            VALUE "LegalCopyright", "Copyright (c) PJ Naughter 2009 - 2011.  All rights reserved."
+            VALUE "OriginalFilename", "OSMCtrlApp.exe"
+            VALUE "ProductName", "OSMCtrlApp"
+            VALUE "ProductVersion", "1.0.15.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
