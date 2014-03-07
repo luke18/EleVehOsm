@@ -809,7 +809,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="2DBarChart.cpp" />
+    <ClCompile Include="2DLineChart.cpp" />
+    <ClCompile Include="2DPieChart.cpp" />
+    <ClCompile Include="ChartObject.cpp" />
     <ClCompile Include="enumser.cpp" />
+    <ClCompile Include="FormCommandView.cpp" />
     <ClCompile Include="GotoCoordinatesDlg.cpp" />
     <ClCompile Include="GpsSettingsDlg.cpp" />
     <ClCompile Include="MainFrm.cpp" />
@@ -817,6 +822,7 @@
     <ClCompile Include="OSMCtrlApp.cpp" />
     <ClCompile Include="OSMCtrlAppDoc.cpp" />
     <ClCompile Include="OSMCtrlAppView.cpp" />
+    <ClCompile Include="OSMCtrlChart.cpp" />
     <ClCompile Include="OSMCtrlCircle.cpp" />
     <ClCompile Include="OSMCtrlMapOperations.cpp" />
     <ClCompile Include="OSMCtrlPolygon.cpp" />
@@ -848,8 +854,13 @@
     <ClCompile Include="TilePropertiesDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="2DBarChart.h" />
+    <ClInclude Include="2DLineChart.h" />
+    <ClInclude Include="2DPieChart.h" />
+    <ClInclude Include="ChartObject.h" />
     <ClInclude Include="cnominatim.h" />
     <ClInclude Include="enumser.h" />
+    <ClInclude Include="FormCommandView.h" />
     <ClInclude Include="GotoCoordinatesDlg.h" />
     <ClInclude Include="GPSCom2Client.h" />
     <ClInclude Include="GpsSettingsDlg.h" />
@@ -860,6 +871,7 @@
     <ClInclude Include="OSMCtrlAppDoc.h" />
     <ClInclude Include="OSMCtrlAppView.h" />
     <ClInclude Include="OSMCtrlCachedTile.h" />
+    <ClInclude Include="OSMCtrlChart.h" />
     <ClInclude Include="OSMCtrlCircle.h" />
     <ClInclude Include="OSMCtrlGPX.h" />
     <ClInclude Include="OSMCtrlHandler.h" />
@@ -874,7 +886,7 @@
     <ClInclude Include="OSMCtrlStation.h" />
     <ClInclude Include="OSMCtrlTileProviders.h" />
     <ClInclude Include="OSMCtrlTimerEventHandler.h" />
-    <ClInclude Include="Resource.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SearchDlg.h" />
     <ClInclude Include="SearchResultsDlg.h" />
     <ClInclude Include="StationDialog.h" />

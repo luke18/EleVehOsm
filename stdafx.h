@@ -30,6 +30,7 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#define PI 3.1415926535897932384626433832795
 
 #include <afxwin.h>         //MFC core and standard components
 #include <afxext.h>         //MFC extensions

@@ -37,6 +37,13 @@ BEGIN
     EDITTEXT        IDC_EDIT2,143,66,40,14,ES_AUTOHSCROLL
 END
 
+IDD_FormCommand DIALOGEX 0, 0, 309, 176
+STYLE DS_SETFONT | WS_CHILD
+FONT 9, "MS Shell Dlg"
+BEGIN
+    LTEXT           "TODO: 将窗体控件放置在此对话框上。",IDC_STATIC,24,42,280,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -51,6 +58,14 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 302
         TOPMARGIN, 7
+        BOTTOMMARGIN, 169
+    END
+
+    IDD_FormCommand, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 6
         BOTTOMMARGIN, 169
     END
 END
@@ -343,8 +358,8 @@ BEGIN
         MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
         MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
         MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
-        MENUITEM "Open\tCtrl+O",				ID_FILE_OPEN
-		MENUITEM "Save\tCtrl+S",				ID_FILE_SAVE
+        MENUITEM "Open\tCtrl+O",                ID_FILE_OPEN
+        MENUITEM "Save\tCtrl+S",                ID_FILE_SAVE
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END

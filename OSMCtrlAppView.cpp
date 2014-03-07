@@ -500,6 +500,33 @@ int COSMCtrlAppView::OnCreate(LPCREATESTRUCT lpCreateStruct)
   samplePolygon.m_bEditable = TRUE; //Allow the polygon to be editable
   m_ctrlOSM.m_Polygons.Add(samplePolygon);
 
+  //demo chart 
+  COSMCtrlChart samplechart;
+  samplechart.targetmarker = &coWexfordMarker;
+  samplechart.GetChartData(3);
+  samplechart.chartpolygon.m_bVisible = TRUE;
+#ifdef COSMCTRL_NOD2D
+  samplechart.chartpolygon.m_DashCap = Gdiplus::DashCapRound;
+  samplechart.chartpolygon.m_EndCap = Gdiplus::LineCapSquareAnchor;
+  samplechart.chartpolygon.m_StartCap = Gdiplus::LineCapArrowAnchor;
+  samplechart.chartpolygon.m_LineJoin = Gdiplus::LineJoinBevel;
+  samplechart.chartpolygon.m_colorPen = Gdiplus::Color(0, 255, 255);
+#else
+  samplechart.chartpolygon.m_DashCap = D2D1_CAP_STYLE_ROUND;
+  samplechart.chartpolygon.m_EndCap = D2D1_CAP_STYLE_SQUARE;
+  samplechart.chartpolygon.m_StartCap = D2D1_CAP_STYLE_TRIANGLE;
+  samplechart.chartpolygon.m_LineJoin = D2D1_LINE_JOIN_BEVEL;
+  samplechart.chartpolygon.m_colorPen = D2D1::ColorF(0, 255, 255);
+#endif
+  samplechart.chartpolygon.m_fDashOffset = 3;
+  samplechart.chartpolygon.m_fLinePenWidth = 3;
+  samplechart.chartpolygon.m_nMinZoomLevel = 0;
+  samplechart.chartpolygon.m_nMaxZoomLevel = 18;
+  samplechart.chartpolygon.m_sToolTipText = _T("A simple chart example for COSMCtrl");
+  samplechart.chartpolygon.m_bDraggable = FALSE; //Allow the polygon to be draggable
+  samplechart.chartpolygon.m_bEditable = FALSE; //Allow the polygon to be editable
+  m_ctrlOSM.m_Polygons.Add(samplechart.chartpolygon);
+
   //For demonstration purposes, lets add a circle to the map
   COSMCtrlCircle sampleCircle;
   sampleCircle.m_Position = COSMCtrlPosition(2, 49);

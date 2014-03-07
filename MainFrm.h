@@ -11,7 +11,10 @@ public:
 
 // Implementation
 public:
+	CSplitterWnd m_splitter;
 	virtual ~CMainFrame();
+protected:
+	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;

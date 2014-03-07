@@ -34,6 +34,7 @@ to maintain a single distribution point for the source code.
 #include "OSMCtrlTileProviders.h"
 #include "OSMCtrlHandler.h"
 #include "OSMCtrlCachedTile.h"
+#include "OSMCtrlChart.h"
 
 #ifdef COSMCTRL_NOD2D
 #ifndef _GDIPLUS_H
