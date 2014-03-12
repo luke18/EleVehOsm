@@ -5,7 +5,11 @@
 #include "OSMCtrlGPX.h"
 #include "OSMCtrlTileProviders.h"
 #include "MFCSensor.h" //If you get a compilation error about this missing header file, then you need to download my MFCSensor code from http://www.naughter.com/mfcsensor.html
-
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <vector>
+#include <fstream>
 
 class CMySensorEvents : public CMFCSensorEvents
 {
@@ -26,6 +30,11 @@ public:
 	COSMCtrl& GetCtrl() { return m_ctrlOSM; };
 	double m_outEdit2;
 	double m_outEdit1;
+	CString outBusName;
+	double outLongitude, outLatitude;
+	int outVolGrade, outBusNumber;
+	double outPdPower[96], outQdPower[96];
+	double outPgPower[96], outQgPower[96];
 
 // Operations
 public:
@@ -72,7 +81,8 @@ protected:
   void DoAddressLookup(CPoint point);
   void DoRefreshTile(CPoint point);
   void DoTileProperties(CPoint point);
-  void UpdateStations(); // Fetch stations in doc and show on map
+  //void ReadInBusData();
+  void UpdateStations(int timeNumber); // Fetch stations in doc and show on map
 #ifdef COSMCTRL_NOD2D
   HRESULT LoadResourceImage(LPCTSTR pName, LPCTSTR pType, HMODULE hInst, Gdiplus::Image*& pImage);
 #endif
@@ -199,7 +209,7 @@ protected:
   afx_msg void OnUpdateDrawPolyline(CCmdUI* pCmdUI);
   afx_msg void OnDrawMarker();
   afx_msg void OnUpdateDrawMarker(CCmdUI* pCmdUI);
-  afx_msg void OnDrawStation();
+  //afx_msg void OnDrawStation();
   afx_msg void OnDrawSelectionRectangle();
   afx_msg void OnUpdateDrawSelectionRectangle(CCmdUI* pCmdUI);
   afx_msg void OnViewMapOperations();

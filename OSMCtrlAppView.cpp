@@ -4,6 +4,13 @@
 #include "OSMCtrlAppView.h"
 #include "TilePropertiesDlg.h"
 #include "GPSSettingsDlg.h"
+
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <vector>
+#include <fstream>
+
 #ifdef COSMCTRL_NOWINHTTP //CNominatin currently only supports Wininet no WinHTTP
 #include "cnominatim.h" //If you get a compilation error about this missing header file, then you need to download my CNominatim class from http://www.naughter.com/nominatim.html
 #endif
@@ -176,7 +183,7 @@ BEGIN_MESSAGE_MAP(COSMCtrlAppView, CView)
   ON_COMMAND(ID_DRAW_POLYLINE, &COSMCtrlAppView::OnDrawPolyline)
   ON_UPDATE_COMMAND_UI(ID_DRAW_POLYLINE, &COSMCtrlAppView::OnUpdateDrawPolyline)
   ON_COMMAND(ID_DRAW_MARKER, &COSMCtrlAppView::OnDrawMarker)
-  ON_COMMAND(ID_DRAW_STATION, &COSMCtrlAppView::OnDrawStation)
+//  ON_COMMAND(ID_DRAW_STATION, &COSMCtrlAppView::OnDrawStation)
   ON_UPDATE_COMMAND_UI(ID_DRAW_MARKER, &COSMCtrlAppView::OnUpdateDrawMarker)
   ON_COMMAND(ID_DRAW_SELECTIONRECTANGLE, &COSMCtrlAppView::OnDrawSelectionRectangle)
   ON_UPDATE_COMMAND_UI(ID_DRAW_SELECTIONRECTANGLE, &COSMCtrlAppView::OnUpdateDrawSelectionRectangle)
@@ -424,10 +431,119 @@ int COSMCtrlAppView::OnCreate(LPCREATESTRUCT lpCreateStruct)
   m_dummyDefaultIcon.m_ptAnchor.x = 10;
   m_dummyDefaultIcon.m_ptAnchor.y = 24;
 
+using namespace std;
+/* following codes read the csv file into doc*/
+/*read bus2num*/
+ifstream in("bus2num.csv");
+string line, field;
+vector< vector<string> > bus2numArray;  // the 2D array
+vector<string> v;                // array of values for one line only
+
+while ( getline(in,line) ) {  // get next line in file
+	v.clear();
+	stringstream ss(line);
+
+	while (getline(ss,field,',')) { // break line into comma delimitted fields
+		v.push_back(field);  // add each field to the 1D array
+	}
+
+	bus2numArray.push_back(v);  // add the 1D array to the 2D array
+}
+/*end read bus2num*/
+
+/*read in day0*/
+ifstream in1("day0.csv");
+vector< vector<string> > day0Array;  // the 2D array
+//vector<string> v;                // array of values for one line only
+
+while ( getline(in1,line) ) {  // get next line in file
+	v.clear();
+	stringstream ss(line);
+
+	while (getline(ss,field,',')) { // break line into comma delimitted fields
+		v.push_back(field);  // add each field to the 1D array
+	}
+
+	day0Array.push_back(v);  // add the 1D array to the 2D array
+}
+/*end read in day0*/
+
+/*read in bracnnum*/
+
+ifstream in2("branchnum.csv");
+vector< vector<string> > branchnumArray;  // the 2D array
+//vector<string> v;                // array of values for one line only
+
+while ( getline(in2,line) ) {  // get next line in file
+	v.clear();
+	stringstream ss(line);
+
+	while (getline(ss,field,',')) { // break line into comma delimitted fields
+		v.push_back(field);  // add each field to the 1D array
+	}
+
+	branchnumArray.push_back(v);  // add the 1D array to the 2D array
+}
+/*end read in bracnnum*/
+
+
+/*put data into doc*/
+
+COSMCtrlAppDoc*pDoc = GetDocument();
+
+for(int i = 0; i < 2; i++)
+{
+	outBusName = bus2numArray[i][1].c_str();
+	outLongitude =  atof(bus2numArray[i][2].c_str());
+	outLatitude = atof(bus2numArray[i][3].c_str());
+	outVolGrade = atoi(bus2numArray[i][4].c_str());
+	outBusNumber = atoi(bus2numArray[i][5].c_str());
+	for (int j = 0; j < 96; j++)
+	{
+		outPdPower[j] = 0;
+		outQdPower[j] = 0;
+		outPgPower[j] = -atof(day0Array[98*i+j][0].c_str());
+		outQgPower[j] = -atof(day0Array[98*i+j][1].c_str());
+	}
+	pDoc->m_Stations.AddStation(outBusName, outLongitude,outLatitude,outVolGrade, outBusNumber, outPdPower, outQdPower, outPgPower,outQgPower);
+}
+
+for (int i = 2; i < 35; i++)
+{
+	outBusName = bus2numArray[i][1].c_str();
+	outLongitude =  atof(bus2numArray[i][2].c_str());
+	outLatitude = atof(bus2numArray[i][3].c_str());
+	outVolGrade = atoi(bus2numArray[i][4].c_str());
+	outBusNumber = atoi(bus2numArray[i][5].c_str());
+
+	for (int j = 0; j < 96; j++)
+	{
+		outPdPower[j] = atof(day0Array[98*i+j][0].c_str());
+		outQdPower[j] = atof(day0Array[98*i+j][1].c_str());
+		outPgPower[j] = 0;
+		outQgPower[j] = 0;
+	}
+	pDoc->m_Stations.AddStation(outBusName, outLongitude,outLatitude,outVolGrade, outBusNumber, outPdPower, outQdPower, outPgPower,outQgPower);
+}
+
+for (int i = 0; i<52; i++)
+{
+	pDoc->branchArray[i][0] = atoi(branchnumArray[i][0].c_str());
+	pDoc->branchArray[i][1] = atoi(branchnumArray[i][1].c_str());
+
+}
+/*end put data into doc*/
+UpdateStations(0);
+CString strarray;
+
+
+StationStruct station;
+pDoc->m_Stations.GetStation(0,&station);
+
 #ifdef _DEBUG  //For demonstration purposes, lets add some objects to the map if we are running a debug build
   COSMCtrlMarker coWexfordMarker;
-  coWexfordMarker.m_Position = COSMCtrlPosition(-6.59, 52.42);
-  coWexfordMarker.m_sToolTipText = _T("The author PJ lives somewhere in County Wexford, Ireland!. You can drag me!");
+  coWexfordMarker.m_Position = COSMCtrlPosition(station.pgPower[0], station.latitude);
+  coWexfordMarker.m_sToolTipText = _T(strarray);
   coWexfordMarker.m_nIconIndex = m_nDefaultMarkerIconIndex;
   coWexfordMarker.m_nMinZoomLevel = 0;
   coWexfordMarker.m_nMaxZoomLevel = 10;
@@ -600,7 +716,7 @@ void COSMCtrlAppView::OnFileOpen()
 		return;
 	f.Close();
 	this->UpdateData(FALSE);
-	COSMCtrlAppView::UpdateStations(); // show marker on map
+	//COSMCtrlAppView::UpdateStations(); // show marker on map
 }
 
 //Function for file save
@@ -1236,6 +1352,7 @@ void COSMCtrlAppView::OnUpdateDrawMarker(CCmdUI* pCmdUI)
   pCmdUI->SetCheck(m_ctrlOSM.GetMapMode() == COSMCtrl::MarkerCreation);
 }
 
+/*
 void COSMCtrlAppView::OnDrawStation()
 {
 	CString m_info;
@@ -1254,8 +1371,9 @@ void COSMCtrlAppView::OnDrawStation()
 		
 	}
 }
+*/
 
-void COSMCtrlAppView::UpdateStations() 
+void COSMCtrlAppView::UpdateStations(int timeNumber) 
 {
 	m_ctrlOSM.m_Markers.RemoveAll();
 	COSMCtrlAppDoc*pDoc = GetDocument();
@@ -1264,16 +1382,78 @@ void COSMCtrlAppView::UpdateStations()
 	for(int i = 0; i<size; i++) {
 		StationStruct station;
 		pDoc->m_Stations.GetStation(i,&station);
-		COSMCtrlMarker coWexfordMarker;
-		coWexfordMarker.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
-		coWexfordMarker.m_sToolTipText = _T("The author PJ lives somewhere in County Wexford, Ireland!. You can drag me!");
-		coWexfordMarker.m_nIconIndex = m_nDefaultMarkerIconIndex;
-		coWexfordMarker.m_nMinZoomLevel = 0;
-		coWexfordMarker.m_nMaxZoomLevel = 10;
-		coWexfordMarker.m_bDraggable = TRUE; //Allow the marker to be draggable
-		m_ctrlOSM.m_Markers.Add(coWexfordMarker);
+		COSMCtrlCircle sampleCircle;
+		sampleCircle.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
+		sampleCircle.m_fRadius = (station.volGrade)*4;
+		
+		#ifdef COSMCTRL_NOD2D
+		sampleCircle.m_DashStyle = Gdiplus::DashStyleDashDot;
+		sampleCircle.m_colorPen = Gdiplus::Color(255, 0, 0);
+		#else
+		sampleCircle.m_DashStyle = D2D1_DASH_STYLE_DASH_DOT;
+		sampleCircle.m_colorPen = D2D1::ColorF(255, 0, 0);
+		#endif
+		sampleCircle.m_fLinePenWidth = 1;
+		sampleCircle.m_nMinZoomLevel = 0;
+		sampleCircle.m_nMaxZoomLevel = 18;
+		sampleCircle.m_sToolTipText = _T(station.busName);
+		sampleCircle.m_bDraggable = FALSE; //Allow the circle to be draggable
+		sampleCircle.m_bEditable = TRUE; //Allow the circle to be editable
+		m_ctrlOSM.m_Circles.Add(sampleCircle);
+	}
+
+	for (int i = 0; i<52; i++) 
+	{
+		int startBus, endBus;
+		startBus = pDoc->branchArray[i][0];
+		endBus = pDoc->branchArray[i][1];
+
+		StationStruct station1;
+		StationStruct station2;
+		pDoc->m_Stations.GetStation(startBus-1,&station1);
+		pDoc->m_Stations.GetStation(endBus-1,&station2);
+
+		COSMCtrlPolyline samplePolyline;
+		COSMCtrlNode tempPosition(station1.longitude, station1.latitude);
+		samplePolyline.m_Nodes.Add(tempPosition);
+		tempPosition = COSMCtrlNode(station2.longitude, station2.latitude);
+		samplePolyline.m_Nodes.Add(tempPosition);
+		samplePolyline.m_fDashOffset = 3;
+		samplePolyline.m_nMinZoomLevel = 0;
+		samplePolyline.m_nMaxZoomLevel = 18;
+		samplePolyline.m_sToolTipText = _T("A simple Polyline example for COSMCtrl");
+		samplePolyline.m_bDraggable = FALSE; //Allow the polyline to be draggable
+		samplePolyline.m_bEditable = TRUE; //Allow the polyline to be edited
+		samplePolyline.m_fLinePenWidth = 1;
+		m_ctrlOSM.m_Polylines.Add(samplePolyline);
 	}
 }
+
+/*
+void COSMCtrlAppView::ReadInBusData()
+{
+	using namespace std;
+	ifstream in("bus2num.csv");
+
+    string line, field;
+
+    vector< vector<string> > array;  // the 2D array
+    vector<string> v;                // array of values for one line only
+
+    while ( getline(in,line) )    // get next line in file
+    {
+        v.clear();
+        stringstream ss(line);
+
+        while (getline(ss,field,','))  // break line into comma delimitted fields
+        {
+            v.push_back(field);  // add each field to the 1D array
+        }
+
+        array.push_back(v);  // add the 1D array to the 2D array
+    }
+}
+*/
 
 void COSMCtrlAppView::OnDrawSelectionRectangle()
 {

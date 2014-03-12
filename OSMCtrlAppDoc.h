@@ -10,6 +10,7 @@ protected: // create from serialization only
 // Attributes
 public:
 	COSMCtrlStation m_Stations;
+	int branchArray[52][2];
 
 // Operations
 public:
