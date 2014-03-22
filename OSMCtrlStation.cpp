@@ -51,6 +51,8 @@ void COSMCtrlStation::GetStation(int stationNum, StationStruct *station)
 		station->qdPower[i] = stationStruct->qdPower[i];
 		station->pgPower[i] = stationStruct->pgPower[i];
 		station->qgPower[i] = stationStruct->qgPower[i];
+		station->voltageM[i] = stationStruct->voltageM[i];
+		station->voltageA[i] = stationStruct->voltageA[i];
 	}
 }
 

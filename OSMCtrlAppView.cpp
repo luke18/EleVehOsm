@@ -2683,14 +2683,19 @@ void COSMCtrlAppView::OnHelpCalculate()
 
 		//put result into doc
 		out.GetData(outBusArray,988);
+		//StationStruct *station = new StationStruct;
 		for(int j=0;j<busSize;j++)
 		{
-			StationStruct station;
-			pDoc->m_Stations.GetStation(j,&station);
-			station.voltageM[i] = outBusArray[7*76+j];
-			station.voltageM[i] = 10;
-			station.voltageA[i] = outBusArray[8*76+j];
+			StationStruct *station = new StationStruct;
+			pDoc->m_Stations.GetStation(j, station);
+			//station->voltageM[i] = 10.1;
+			station->voltageM[i] = outBusArray[7*76+j];
+			station->voltageA[i] = outBusArray[8*76+j];
+			pDoc->m_Stations.m_stationArray.RemoveAt(j);
+			pDoc->m_Stations.m_stationArray.InsertAt(j, station);
+			
 		}
+		UpdateStations(40);
 		// Call the application and library termination routine
 
 	}
@@ -2721,12 +2726,14 @@ void COSMCtrlAppView::OnAppConfm()
 			pDoc->m_Stations.GetStation(circleOnDraw.relatedBus,&station);
 
 			CString editBusNum;
-			editBusNum.Format(_T("%d"), station.busNumber);
+			editBusNum.Format(_T("%d"), currentTimeInt);
 			
 			CString editBusVoltageM;
+
 			editBusVoltageM.Format(_T("%f"), station.voltageM[currentTimeInt]);
 			pBoxOne->SetWindowTextW(editBusNum);
 			pBoxTwo->SetWindowTextW(editBusVoltageM);
+			
 			break;
 		}
 
