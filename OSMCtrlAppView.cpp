@@ -2724,14 +2724,11 @@ void COSMCtrlAppView::OnAppConfm()
 			StationStruct station;
 			int testIntaa = circleOnDraw.relatedBus;
 			pDoc->m_Stations.GetStation(circleOnDraw.relatedBus,&station);
-
-			CString editBusNum;
-			editBusNum.Format(_T("%d"), currentTimeInt);
 			
 			CString editBusVoltageM;
 
 			editBusVoltageM.Format(_T("%f"), station.voltageM[currentTimeInt]);
-			pBoxOne->SetWindowTextW(editBusNum);
+			pBoxOne->SetWindowTextW(station.busName);
 			pBoxTwo->SetWindowTextW(editBusVoltageM);
 			
 			break;
