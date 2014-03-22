@@ -31,6 +31,7 @@ to maintain a single distribution point for the source code.
 
 COSMCtrlCircle::COSMCtrlCircle() : m_fRadius(0),
                                    m_bSelected(FALSE),
+								   relatedBus(-1),
                                    m_fLinePenWidth(2),
                                    m_colorSelection(255, 0, 0),
                                    m_DrawingStyle(LineAndInside),
@@ -63,6 +64,7 @@ COSMCtrlCircle::COSMCtrlCircle(const COSMCtrlCircle& circle)
 
 COSMCtrlCircle& COSMCtrlCircle::operator=(const COSMCtrlCircle& circle)
 {
+  relatedBus       = circle.relatedBus;
   m_Position       = circle.m_Position;
   m_fRadius        = circle.m_fRadius;
   m_bSelected      = circle.m_bSelected;

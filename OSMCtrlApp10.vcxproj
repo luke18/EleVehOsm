@@ -116,7 +116,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Static</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug (GDI+)|Win32'" Label="Configuration">
@@ -344,6 +344,10 @@
     <RunCodeAnalysis Condition="'$(Configuration)|$(Platform)'=='Unicode Release|x64'">true</RunCodeAnalysis>
     <RunCodeAnalysis Condition="'$(Configuration)|$(Platform)'=='Unicode Release (GDI+)|x64'">true</RunCodeAnalysis>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>D:\Program Files%28x86%29\MATLAB\R2013a\extern\include;D:\Program Files%28x86%29\MATLAB\R2013a\extern\include\win32;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Program Files%28x86%29\MATLAB\R2013a\extern\lib\win32\microsoft;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -360,6 +364,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
+      <AdditionalIncludeDirectories>D:\Program Files%28x86%29\MATLAB\R2013a\bin\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -367,10 +372,11 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>gdiplus.lib;wininet.lib;winhttp.lib%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;wininet.lib;winhttp.lib;mclmcr.lib;libmex.lib;libmx.lib;mclmcrrt.lib;libfinalflow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>D:\Program Files%28x86%29\MATLAB\R2013a\extern\lib\win32\microsoft;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug (GDI+)|Win32'">
@@ -809,10 +815,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="2DBarChart.cpp" />
-    <ClCompile Include="2DLineChart.cpp" />
-    <ClCompile Include="2DPieChart.cpp" />
-    <ClCompile Include="ChartObject.cpp" />
     <ClCompile Include="enumser.cpp" />
     <ClCompile Include="FormCommandView.cpp" />
     <ClCompile Include="GotoCoordinatesDlg.cpp" />
@@ -854,10 +856,6 @@
     <ClCompile Include="TilePropertiesDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="2DBarChart.h" />
-    <ClInclude Include="2DLineChart.h" />
-    <ClInclude Include="2DPieChart.h" />
-    <ClInclude Include="ChartObject.h" />
     <ClInclude Include="cnominatim.h" />
     <ClInclude Include="enumser.h" />
     <ClInclude Include="FormCommandView.h" />

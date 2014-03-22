@@ -72,7 +72,8 @@
 #define IDC_LATITUDE_MINUTES            1026
 #define IDC_LATITUDE_SECONDS            1027
 #define IDC_PROGRESS1                   1027
-#define IDC_SLIDER1                     1028
+#define IDC_H_SLIDER                    1028
+#define IDC_H_SLIDER_ECHO               1031
 #define ID_ZOOM_0                       32772
 #define ID_ZOOM_1                       32773
 #define ID_ZOOM_2                       32774
@@ -134,6 +135,8 @@
 #define ID_PROVIDERS_MAPQUEST_OSM       32851
 #define ID_PROVIDERS_MAPQUEST_OPEN_AERIAL 32852
 #define ID_FILE_32853                   32853
+#define ID_HELP_CALCULATE               32854
+#define ID_APP_CONFM                    32855
 #define ID_OBJECT_CHART_1               40000
 #define ID_OBJECT_CHART_2               40001
 #define ID_INDICATOR_POSITION           0xE700
@@ -144,8 +147,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        137
-#define _APS_NEXT_COMMAND_VALUE         32854
-#define _APS_NEXT_CONTROL_VALUE         1029
+#define _APS_NEXT_COMMAND_VALUE         32856
+#define _APS_NEXT_CONTROL_VALUE         1032
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

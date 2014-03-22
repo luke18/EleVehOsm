@@ -435,7 +435,7 @@ BEGIN_MESSAGE_MAP(COSMCtrl, CStatic)
   ON_WM_CHAR()
   ON_WM_MOUSEWHEEL()
   ON_WM_LBUTTONDBLCLK()
-  ON_WM_VSCROLL()
+//  ON_WM_VSCROLL()
   ON_WM_TIMER()
   ON_NOTIFY_EX_RANGE(TTN_NEEDTEXT, 0, 0xFFFF, &COSMCtrl::OnToolTipText)
   ON_NOTIFY(NM_CLICK, COPYRIGHT_ID, &COSMCtrl::OnNMClickCopyright)
@@ -8897,63 +8897,63 @@ BOOL COSMCtrl::OnToolTipText(UINT /*nID*/, NMHDR* pNMHDR, LRESULT* pResult)
   return TRUE; 
 }
 
-void COSMCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
-{
-  //Let the base class do its thing
-  CStatic::OnVScroll(nSBCode, nPos, pScrollBar);
-  
-  //Handle the notification if it is from our control
-  AFXASSUME(pScrollBar);
-  if (pScrollBar->GetSafeHwnd() == m_ctrlZoomBar.GetSafeHwnd())
-  {
-    switch (nSBCode)
-    {
-      case TB_BOTTOM:
-      {
-        SetZoom(OSMMinZoom, FALSE);
-        break;
-      }
-      case TB_TOP:
-      {
-        SetZoom(OSMMaxZoom, FALSE);
-        break;
-      }
-      case TB_LINEUP:
-      {
-        //Increase the zoom
-        double fZoom = static_cast<int>(GetZoom()); //Try to keep the zoom at an integer level
-        ++fZoom;
-        SetZoom(fZoom, FALSE);
-        break;
-      }
-      case TB_LINEDOWN:
-      {
-        //decrease the zoom
-        double fZoom = static_cast<int>(GetZoom()); //Try to keep the zoom at an integer level
-        --fZoom;
-        SetZoom(fZoom, FALSE);
-        break;
-      }
-      case TB_PAGEDOWN: //deliberate fallthrough
-      case TB_PAGEUP:
-      {
-        SetZoom(OSMMaxZoom - (m_ctrlZoomBar.GetPos() / 10.0), TRUE);
-        break;
-      }
-      case TB_THUMBTRACK: //deliberate fallthrough
-      case TB_THUMBPOSITION:
-      {
-        SetZoom(OSMMaxZoom - (nPos / 10.0), FALSE);
-        break;
-      }
-      default:
-      {
-        //Nothing to do
-        break;
-      }
-    }
-  }
-}
+//void COSMCtrl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+//{
+//  //Let the base class do its thing
+//  CStatic::OnVScroll(nSBCode, nPos, pScrollBar);
+//  
+//  //Handle the notification if it is from our control
+//  AFXASSUME(pScrollBar);
+//  if (pScrollBar->GetSafeHwnd() == m_ctrlZoomBar.GetSafeHwnd())
+//  {
+//    switch (nSBCode)
+//    {
+//      case TB_BOTTOM:
+//      {
+//        SetZoom(OSMMinZoom, FALSE);
+//        break;
+//      }
+//      case TB_TOP:
+//      {
+//        SetZoom(OSMMaxZoom, FALSE);
+//        break;
+//      }
+//      case TB_LINEUP:
+//      {
+//        //Increase the zoom
+//        double fZoom = static_cast<int>(GetZoom()); //Try to keep the zoom at an integer level
+//        ++fZoom;
+//        SetZoom(fZoom, FALSE);
+//        break;
+//      }
+//      case TB_LINEDOWN:
+//      {
+//        //decrease the zoom
+//        double fZoom = static_cast<int>(GetZoom()); //Try to keep the zoom at an integer level
+//        --fZoom;
+//        SetZoom(fZoom, FALSE);
+//        break;
+//      }
+//      case TB_PAGEDOWN: //deliberate fallthrough
+//      case TB_PAGEUP:
+//      {
+//        SetZoom(OSMMaxZoom - (m_ctrlZoomBar.GetPos() / 10.0), TRUE);
+//        break;
+//      }
+//      case TB_THUMBTRACK: //deliberate fallthrough
+//      case TB_THUMBPOSITION:
+//      {
+//        SetZoom(OSMMaxZoom - (nPos / 10.0), FALSE);
+//        break;
+//      }
+//      default:
+//      {
+//        //Nothing to do
+//        break;
+//      }
+//    }
+//  }
+//}
 
 BOOL COSMCtrl::GetBoundingNodeRect(const COSMCtrlPolyline& polyline, INT_PTR nIndex, CRect& rBounds, const CRect& rClient) const
 {

@@ -50,7 +50,8 @@ public:
   COSMCtrlCircle& operator=(const COSMCtrlCircle& polygon);
   BOOL GetBoundingRect(COSMCtrlPosition& topLeft, COSMCtrlPosition& bottomRight) const;
   
-//Member variables
+//Member variablesF
+  int								  relatedBus;
   COSMCtrlPosition                    m_Position;            //The position of this circle
   double                              m_fRadius;             //The radius distance in meters
   BOOL                                m_bSelected;           //Is this circle selected

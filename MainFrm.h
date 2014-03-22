@@ -1,4 +1,6 @@
 #pragma once
+#include "OSMCtrlAppView.h"
+#include "FormCommandView.h"
 
 class CMainFrame : public CFrameWnd
 {
@@ -7,6 +9,8 @@ protected: // create from serialization only
 	DECLARE_DYNCREATE(CMainFrame)
 
 public:
+	COSMCtrlAppView *pRightView;
+	COSMCtrlAppView *pLeftView;
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
 // Implementation

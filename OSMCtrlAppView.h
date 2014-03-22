@@ -4,6 +4,7 @@
 #include "GPSCom2Client.h" //If you get a compilation error about this missing header file, then you need to download my GPSCom2 classes from http://www.naughter.com/gpscom2.html
 #include "OSMCtrlGPX.h"
 #include "OSMCtrlTileProviders.h"
+#include "OSMCtrlAppDoc.h"
 #include "MFCSensor.h" //If you get a compilation error about this missing header file, then you need to download my MFCSensor code from http://www.naughter.com/mfcsensor.html
 #include <string>
 #include <sstream>
@@ -27,6 +28,7 @@ protected: // create from serialization only
 // Attributes
 public:
 	COSMCtrlAppDoc* GetDocument() const;
+	COSMCtrlAppDoc*pDoc;
 	COSMCtrl& GetCtrl() { return m_ctrlOSM; };
 	double m_outEdit2;
 	double m_outEdit1;
@@ -35,9 +37,11 @@ public:
 	int outVolGrade, outBusNumber;
 	double outPdPower[96], outQdPower[96];
 	double outPgPower[96], outQgPower[96];
+	int currentTimeInt;
 
 // Operations
 public:
+
 
 // Overrides
 public:
@@ -52,6 +56,10 @@ protected:
 // Implementation
 public:
 	virtual ~COSMCtrlAppView();
+	void UpdateStations(int timeNumber); // Fetch stations in doc and show on map
+	void OnZoomSp();
+	void OnSwitchNormal();
+	void OnSwitchMarker();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
@@ -72,6 +80,7 @@ protected:
 
 
 //Methods
+
   void OpenGPS(BOOL bReportError);
   virtual void OnRMC(const CString& sSentence, const GPSCom2::CRMCSentence& sentence);
   virtual BOOL SaveTrackLog(const CString& sFileName);
@@ -82,7 +91,7 @@ protected:
   void DoRefreshTile(CPoint point);
   void DoTileProperties(CPoint point);
   //void ReadInBusData();
-  void UpdateStations(int timeNumber); // Fetch stations in doc and show on map
+  
 #ifdef COSMCTRL_NOD2D
   HRESULT LoadResourceImage(LPCTSTR pName, LPCTSTR pType, HMODULE hInst, Gdiplus::Image*& pImage);
 #endif
@@ -115,8 +124,8 @@ protected:
 	
   afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
   afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-  afx_msg void OnFileOpen();
-  afx_msg void OnFileSave();
+  //afx_msg void OnFileOpen();
+  //afx_msg void OnFileSave();
   afx_msg void OnZoom0();
   afx_msg void OnZoom1();
   afx_msg void OnZoom2();
@@ -226,8 +235,11 @@ protected:
   afx_msg void OnViewGotoCoordinates();
   afx_msg void OnViewDeltaMode();
   afx_msg void OnUpdateViewDeltaMode(CCmdUI* pCmdUI);
+  afx_msg void OnAppConfm();
 
   friend class CMainFrame;
+public:
+	afx_msg void OnHelpCalculate();
 };
 
 #ifndef _DEBUG  // debug version in OSMCtrlAppView.cpp

@@ -115,6 +115,7 @@ class COSMCtrlCyclemapTileProvider : public IOSMCtrlTileProvider
 class COSMCtrlMapquestOSMTileProvider : public IOSMCtrlTileProvider
 {
 //Methods
+  //Methods
   virtual CString GetDownloadURL(int nZoom, int nTileX, int nTileY)
   {
     CString sURL;
@@ -124,13 +125,13 @@ class COSMCtrlMapquestOSMTileProvider : public IOSMCtrlTileProvider
 
   virtual CString GetDownloadServer()
   { 
-    return CString(_T("otile1.mqcdn.com"));
+    return CString(_T("mt1.google.com/vt/lyrs=p&"));
   }
 
   virtual CString GetDownloadObject(int nZoom, int nTileX, int nTileY)
   { 
     CString sObject;
-    sObject.Format(_T("/tiles/1.0.0/osm/%d/%d/%d.png"), nZoom, nTileX, nTileY);
+    sObject.Format(_T("x=%d&y=%d&z=%d"), nTileX, nTileY, nZoom);
     return sObject;
   }
 };
@@ -148,13 +149,13 @@ class COSMCtrlMapquestOpenAerialTileProvider : public IOSMCtrlTileProvider
 
   virtual CString GetDownloadServer()
   { 
-    return CString(_T("oatile1.mqcdn.com"));
+    return CString(_T("mt1.google.com"));
   }
 
   virtual CString GetDownloadObject(int nZoom, int nTileX, int nTileY)
   { 
     CString sObject;
-    sObject.Format(_T("/naip/%d/%d/%d.png"), nZoom, nTileX, nTileY);
+    sObject.Format(_T("/vt/lyrs=m&x=%d&y=%d&z=%d"), nTileX, nTileY, nZoom);
     return sObject;
   }
 };

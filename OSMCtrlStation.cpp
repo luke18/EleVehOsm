@@ -29,6 +29,10 @@ void COSMCtrlStation::AddStation(CString busName,double longitude, double latitu
 	m_stationArray.Add(station);
 }
 
+
+
+
+
 int COSMCtrlStation::GetStationCount()
 {
 	return m_stationArray.GetSize();

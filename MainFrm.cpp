@@ -257,6 +257,9 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	m_splitter.CreateView(0,0,RUNTIME_CLASS(CFormCommandView),CSize(200,200),pContext); 
 	//将CMyGameView连接到0行1列窗格上
     m_splitter.CreateView(0,1,RUNTIME_CLASS(COSMCtrlAppView),CSize(200,200), pContext); 
+
+	pRightView = (COSMCtrlAppView*)m_splitter.GetPane(0,1);
+	pLeftView = (COSMCtrlAppView*)m_splitter.GetPane(0,0);
     return TRUE; 
 	
 	return CFrameWnd::OnCreateClient(lpcs, pContext);

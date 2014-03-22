@@ -4,6 +4,7 @@
 #include "OSMCtrlAppView.h"
 #include "TilePropertiesDlg.h"
 #include "GPSSettingsDlg.h"
+#include "OSMCtrlStation.h"
 
 #include <string>
 #include <sstream>
@@ -19,8 +20,9 @@
 #include "SearchResultsDlg.h"
 #endif
 #include "GotoCoordinatesDlg.h"
-#include "StationDialog.h"
 
+#include "libfinalflow.h"
+#include "FormCommandView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -90,8 +92,8 @@ BEGIN_MESSAGE_MAP(COSMCtrlAppView, CView)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
   ON_WM_CREATE()
   ON_WM_ERASEBKGND()
-  ON_COMMAND(ID_FILE_OPEN, &COSMCtrlAppView::OnFileOpen)
-  ON_COMMAND(ID_FILE_SAVE, &COSMCtrlAppView::OnFileSave)
+  //ON_COMMAND(ID_FILE_OPEN, &COSMCtrlAppView::OnFileOpen)
+  //ON_COMMAND(ID_FILE_SAVE, &COSMCtrlAppView::OnFileSave)
   ON_COMMAND(ID_ZOOM_0, &COSMCtrlAppView::OnZoom0)
   ON_COMMAND(ID_ZOOM_1, &COSMCtrlAppView::OnZoom1)
   ON_COMMAND(ID_ZOOM_2, &COSMCtrlAppView::OnZoom2)
@@ -201,6 +203,8 @@ BEGIN_MESSAGE_MAP(COSMCtrlAppView, CView)
   ON_COMMAND(ID_VIEW_GOTOCOORDINATES, &COSMCtrlAppView::OnViewGotoCoordinates)
   ON_COMMAND(ID_VIEW_DELTAMODE, &COSMCtrlAppView::OnViewDeltaMode)
   ON_UPDATE_COMMAND_UI(ID_VIEW_DELTAMODE, &COSMCtrlAppView::OnUpdateViewDeltaMode)
+  ON_COMMAND(ID_HELP_CALCULATE, &COSMCtrlAppView::OnHelpCalculate)
+  ON_COMMAND(ID_APP_CONFM, COSMCtrlAppView::OnAppConfm) 
   END_MESSAGE_MAP()
 
 COSMCtrlAppView::COSMCtrlAppView() : m_nGPSPort(0),
@@ -228,8 +232,23 @@ BOOL COSMCtrlAppView::PreCreateWindow(CREATESTRUCT& cs)
 	return CView::PreCreateWindow(cs);
 }
 
-void COSMCtrlAppView::OnDraw(CDC* /*pDC*/)
+void COSMCtrlAppView::OnDraw(CDC*/* pDC*/)
 {	
+	/*
+	COSMCtrlCircle circleOnDraw;
+	int circleSize = m_ctrlOSM.m_Circles.GetSize();
+	for(int i = 0; i<circleSize;i++)
+	{
+		circleOnDraw = m_ctrlOSM.m_Circles.ElementAt(i);
+		
+		if (circleOnDraw.m_bSelected==TRUE)
+		{
+			CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
+			COSMCtrlAppView* pView = (COSMCtrlAppView*)pFrame->pLeftView;
+			pFrame->SetActiveView(pView);
+		}
+
+	}*/
 }
 
 BOOL COSMCtrlAppView::OnPreparePrinting(CPrintInfo* pInfo)
@@ -433,7 +452,7 @@ int COSMCtrlAppView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 using namespace std;
 /* following codes read the csv file into doc*/
-/*read bus2num*/
+/*read in bus2num*/
 ifstream in("bus2num.csv");
 string line, field;
 vector< vector<string> > bus2numArray;  // the 2D array
@@ -446,12 +465,12 @@ while ( getline(in,line) ) {  // get next line in file
 	while (getline(ss,field,',')) { // break line into comma delimitted fields
 		v.push_back(field);  // add each field to the 1D array
 	}
-
+	
 	bus2numArray.push_back(v);  // add the 1D array to the 2D array
 }
-/*end read bus2num*/
+/*end read in bus2num*/
 
-/*read in day0*/
+/*read in day0
 ifstream in1("day0.csv");
 vector< vector<string> > day0Array;  // the 2D array
 //vector<string> v;                // array of values for one line only
@@ -466,10 +485,26 @@ while ( getline(in1,line) ) {  // get next line in file
 
 	day0Array.push_back(v);  // add the 1D array to the 2D array
 }
-/*end read in day0*/
+end read in day0*/
+
+/*read in load data*/
+ifstream in1("loaddata.csv");
+vector< vector<string> > loadArray;  // the 2D array
+//vector<string> v;                // array of values for one line only
+
+while ( getline(in1,line) ) {  // get next line in file
+	v.clear();
+	stringstream ss(line);
+
+	while (getline(ss,field,',')) { // break line into comma delimitted fields
+		v.push_back(field);  // add each field to the 1D array
+	}
+
+	loadArray.push_back(v);  // add the 1D array to the 2D array
+}
+/*end read in load data */
 
 /*read in bracnnum*/
-
 ifstream in2("branchnum.csv");
 vector< vector<string> > branchnumArray;  // the 2D array
 //vector<string> v;                // array of values for one line only
@@ -502,8 +537,8 @@ for(int i = 0; i < 2; i++)
 	{
 		outPdPower[j] = 0;
 		outQdPower[j] = 0;
-		outPgPower[j] = -atof(day0Array[98*i+j][0].c_str());
-		outQgPower[j] = -atof(day0Array[98*i+j][1].c_str());
+		outPgPower[j] = atof(loadArray[2+j][17+2*i+1].c_str());
+		outQgPower[j] = atof(loadArray[2+j][17+2*i+2].c_str());
 	}
 	pDoc->m_Stations.AddStation(outBusName, outLongitude,outLatitude,outVolGrade, outBusNumber, outPdPower, outQdPower, outPgPower,outQgPower);
 }
@@ -518,8 +553,16 @@ for (int i = 2; i < 35; i++)
 
 	for (int j = 0; j < 96; j++)
 	{
-		outPdPower[j] = atof(day0Array[98*i+j][0].c_str());
-		outQdPower[j] = atof(day0Array[98*i+j][1].c_str());
+		if (i < 11) 
+		{
+			outPdPower[j] = atof(loadArray[2+j][2*i-4].c_str());
+			outQdPower[j] = atof(loadArray[2+j][2*i-3].c_str());
+		}
+		else 
+		{
+			outPdPower[j] = 0;
+			outQdPower[j] = 0;
+		}
 		outPgPower[j] = 0;
 		outQgPower[j] = 0;
 	}
@@ -533,7 +576,78 @@ for (int i = 0; i<52; i++)
 
 }
 /*end put data into doc*/
-UpdateStations(0);
+
+/*start calculate in matlab
+pDoc = GetDocument();
+double busAddArray[988]; 
+double genAddArray[42];
+for (int i=0;i<96;i++)
+{
+	memset(busAddArray, 0, 988);
+	memset(genAddArray, 0, 42);
+	for (int j=2;i<10;i++)
+	{
+		StationStruct station;
+		pDoc->m_Stations.GetStation(j,&station);
+		busAddArray[2*87+j] = station.pdPower[i];
+		busAddArray[3*87+j] = station.qdPower[i];
+	}
+	for (int j=0;i<2;i++)
+	{
+		StationStruct station;
+		pDoc->m_Stations.GetStation(j,&station);
+		busAddArray[1*2+j] = station.pdPower[i];
+		busAddArray[2*2+j] = station.qdPower[i];
+	}
+
+	mclmcrInitialize();
+	if (!mclInitializeApplication(NULL,0)) 
+    {
+        std::cerr << "could not initialize the application properly"
+                   << std::endl;
+    	return -1;
+    }
+    if( !libfinalflowInitialize() )
+    {
+        std::cerr << "could not initialize the library properly"
+                   << std::endl;
+	return -1;
+    }
+    else
+    {
+        try
+        {
+            // Create input data
+            mwArray in1(76, 13, mxDOUBLE_CLASS, mxREAL);
+            mwArray in2(2, 21, mxDOUBLE_CLASS, mxREAL);
+            in1.SetData(busAddArray, 6);
+            in2.SetData(genAddArray, 6);
+            
+            // Create output array
+            mwArray out;
+            
+            // Call the library function
+            Newflow(1, out, in1, in2);
+            
+        }
+        catch (const mwException& e)
+        {
+          std::cerr << e.what() << std::endl;
+          return -2;
+        }
+        catch (...)
+        {
+          std::cerr << "Unexpected error thrown" << std::endl;
+          return -3;
+        }     
+        // Call the application and library termination routine
+        libfinalflowTerminate();
+    }
+	//mclTerminateApplication();
+}
+end calculate in matlab*/
+
+UpdateStations(40);
 CString strarray;
 
 
@@ -543,7 +657,7 @@ pDoc->m_Stations.GetStation(0,&station);
 #ifdef _DEBUG  //For demonstration purposes, lets add some objects to the map if we are running a debug build
   COSMCtrlMarker coWexfordMarker;
   coWexfordMarker.m_Position = COSMCtrlPosition(station.pgPower[0], station.latitude);
-  coWexfordMarker.m_sToolTipText = _T(strarray);
+  coWexfordMarker.m_sToolTipText = strarray;
   coWexfordMarker.m_nIconIndex = m_nDefaultMarkerIconIndex;
   coWexfordMarker.m_nMinZoomLevel = 0;
   coWexfordMarker.m_nMaxZoomLevel = 10;
@@ -661,6 +775,7 @@ pDoc->m_Stations.GetStation(0,&station);
   sampleCircle.m_bDraggable = TRUE; //Allow the circle to be draggable
   sampleCircle.m_bEditable = TRUE; //Allow the circle to be editable
   m_ctrlOSM.m_Circles.Add(sampleCircle);
+  
 #endif //_DEBUG
 
   //Read in the GPS settings and start it up if required
@@ -696,6 +811,7 @@ BOOL COSMCtrlAppView::OnEraseBkgnd(CDC* /*pDC*/)
 }
 
 //Function for file open
+/*
 void COSMCtrlAppView::OnFileOpen()
 {
 	this->UpdateData();
@@ -718,8 +834,10 @@ void COSMCtrlAppView::OnFileOpen()
 	this->UpdateData(FALSE);
 	//COSMCtrlAppView::UpdateStations(); // show marker on map
 }
+*/
 
 //Function for file save
+/*
 void COSMCtrlAppView::OnFileSave()
 {
 	this->UpdateData();
@@ -739,7 +857,7 @@ void COSMCtrlAppView::OnFileSave()
 		return;
 	f.Close();
 }
-
+*/
 void COSMCtrlAppView::OnZoom0()
 {
   m_ctrlOSM.SetZoom(0, TRUE);
@@ -1372,36 +1490,73 @@ void COSMCtrlAppView::OnDrawStation()
 	}
 }
 */
-
+ 
+//every time draw the visualization
 void COSMCtrlAppView::UpdateStations(int timeNumber) 
 {
 	m_ctrlOSM.m_Markers.RemoveAll();
-	COSMCtrlAppDoc*pDoc = GetDocument();
+	m_ctrlOSM.m_Polylines.RemoveAll();
+	m_ctrlOSM.m_Circles.RemoveAll();
+	pDoc = GetDocument();
 	int size = pDoc->m_Stations.GetStationCount(); // get size of array in doc
-	//add station one by one
+	
+	/*draw circle for bus*/
 	for(int i = 0; i<size; i++) {
 		StationStruct station;
 		pDoc->m_Stations.GetStation(i,&station);
 		COSMCtrlCircle sampleCircle;
-		sampleCircle.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
-		sampleCircle.m_fRadius = (station.volGrade)*4;
 		
+		sampleCircle.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
+		//sampleCircle.m_fRadius = (station.pdPower[timeNumber]*10);
+		sampleCircle.m_fRadius = timeNumber*20;
+		sampleCircle.relatedBus = i;
+		if(station.volGrade == 220) 
+		{
+			#ifdef COSMCTRL_NOD2D
+			sampleCircle.m_colorBrush = Gdiplus::Color(0,0,128);
+			#else
+			sampleCircle.m_colorBrush = D2D1::ColorF(0,0,128);
+			#endif
+			sampleCircle.m_nMinZoomLevel = 0;
+		}
+		else if (station.volGrade == 110) 
+		{
+			#ifdef COSMCTRL_NOD2D
+			sampleCircle.m_colorBrush = Gdiplus::Color(0,255,255);
+			#else
+			sampleCircle.m_colorBrush = D2D1::ColorF(0,255,255);
+			#endif
+			sampleCircle.m_nMinZoomLevel = 0;
+		}
+		else if (station.volGrade == 35) 
+		{
+			#ifdef COSMCTRL_NOD2D
+			sampleCircle.m_colorBrush = Gdiplus::Color(128,128,0);
+			#else
+			sampleCircle.m_colorBrush = D2D1::ColorF(128,128,0);
+			#endif
+			sampleCircle.m_nMinZoomLevel = 11;
+		}
 		#ifdef COSMCTRL_NOD2D
 		sampleCircle.m_DashStyle = Gdiplus::DashStyleDashDot;
-		sampleCircle.m_colorPen = Gdiplus::Color(255, 0, 0);
+		sampleCircle.m_colorPen = Gdiplus::Color(255,69,0);
 		#else
 		sampleCircle.m_DashStyle = D2D1_DASH_STYLE_DASH_DOT;
-		sampleCircle.m_colorPen = D2D1::ColorF(255, 0, 0);
+		sampleCircle.m_colorPen = D2D1::ColorF(255,69,0);
 		#endif
-		sampleCircle.m_fLinePenWidth = 1;
-		sampleCircle.m_nMinZoomLevel = 0;
+		sampleCircle.m_fLinePenWidth = 2;
 		sampleCircle.m_nMaxZoomLevel = 18;
-		sampleCircle.m_sToolTipText = _T(station.busName);
+		CString tooltips;
+		tooltips.Format(_T("%d"), station.busNumber);
+		sampleCircle.m_sToolTipText = tooltips;
 		sampleCircle.m_bDraggable = FALSE; //Allow the circle to be draggable
 		sampleCircle.m_bEditable = TRUE; //Allow the circle to be editable
 		m_ctrlOSM.m_Circles.Add(sampleCircle);
+	
 	}
+	/*end draw circle for bus*/
 
+	/*begin draw line for branch*/
 	for (int i = 0; i<52; i++) 
 	{
 		int startBus, endBus;
@@ -1419,14 +1574,37 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 		tempPosition = COSMCtrlNode(station2.longitude, station2.latitude);
 		samplePolyline.m_Nodes.Add(tempPosition);
 		samplePolyline.m_fDashOffset = 3;
-		samplePolyline.m_nMinZoomLevel = 0;
-		samplePolyline.m_nMaxZoomLevel = 18;
+		if (startBus > 11 || endBus > 11) {
+			samplePolyline.m_nMinZoomLevel = 11;
+			samplePolyline.m_nMaxZoomLevel = 18;
+		}
+		else 
+		{
+			samplePolyline.m_nMinZoomLevel = 0;
+			samplePolyline.m_nMaxZoomLevel = 18;
+		}
 		samplePolyline.m_sToolTipText = _T("A simple Polyline example for COSMCtrl");
 		samplePolyline.m_bDraggable = FALSE; //Allow the polyline to be draggable
 		samplePolyline.m_bEditable = TRUE; //Allow the polyline to be edited
 		samplePolyline.m_fLinePenWidth = 1;
 		m_ctrlOSM.m_Polylines.Add(samplePolyline);
 	}
+	/*end draw line for branch*/
+}
+
+void COSMCtrlAppView::OnZoomSp() 
+{
+	m_ctrlOSM.SetZoom(10, TRUE);
+}
+
+void COSMCtrlAppView::OnSwitchNormal()
+{
+	m_ctrlOSM.SetMapMode(COSMCtrl::Normal);
+}
+
+void COSMCtrlAppView::OnSwitchMarker()
+{
+	m_ctrlOSM.SetMapMode(COSMCtrl::MarkerCreation);
 }
 
 /*
@@ -2445,4 +2623,112 @@ void COSMCtrlAppView::OnViewDeltaMode()
 void COSMCtrlAppView::OnUpdateViewDeltaMode(CCmdUI* pCmdUI)
 {
   pCmdUI->SetCheck(m_ctrlOSM.GetDeltaMode());
+}
+
+
+void COSMCtrlAppView::OnHelpCalculate()
+{
+	/*start calculate in matlab*/
+	pDoc = GetDocument();
+	int busSize = pDoc->m_Stations.GetStationCount();
+	double busAddArray[988]; 
+	double genAddArray[42];
+	double outBusArray[988];
+	mclmcrInitialize();
+	libfinalflowInitialize();
+	mwArray in1(76, 13, mxDOUBLE_CLASS, mxREAL);
+	mwArray in2(2, 21, mxDOUBLE_CLASS, mxREAL);
+	for (int i=0;i<96;i++)
+	{
+		//memset(busAddArray, 0, 988);
+		//memset(genAddArray, 0, 42);
+		for(int j =0;j<988;j++)
+			busAddArray[j]=0;
+		for(int j =0;j<42;j++)
+			genAddArray[j]=0;
+		
+		for (int j=2;j<10;j++)
+		{
+			StationStruct station;
+			pDoc->m_Stations.GetStation(j,&station);
+			busAddArray[2*76+j] = station.pdPower[i];
+			busAddArray[3*76+j] = station.qdPower[i];
+		}
+		for (int j=0;j<2;j++)
+		{
+			StationStruct station;
+			pDoc->m_Stations.GetStation(j,&station);
+			genAddArray[1*2+j] = station.pgPower[i];
+			genAddArray[2*2+j] = station.qgPower[i];
+		}
+			
+		// Create input data
+
+		in1.SetData(busAddArray, 988);
+		in2.SetData(genAddArray, 42);
+            
+		// Create output array
+		mwArray out;
+            
+		// Call the library function
+		try{
+			Newflow(1, out, in1, in2);
+		}
+		catch (const mwException& erro)
+		{
+			CString str;
+			str = erro.what();
+			MessageBox(str,NULL,NULL);
+		}
+
+		//put result into doc
+		out.GetData(outBusArray,988);
+		for(int j=0;j<busSize;j++)
+		{
+			StationStruct station;
+			pDoc->m_Stations.GetStation(j,&station);
+			station.voltageM[i] = outBusArray[7*76+j];
+			station.voltageM[i] = 10;
+			station.voltageA[i] = outBusArray[8*76+j];
+		}
+		// Call the application and library termination routine
+
+	}
+	libfinalflowTerminate();
+	mclTerminateApplication();
+	/*end calculate in matlab*/
+}
+
+void COSMCtrlAppView::OnAppConfm()
+{
+	pDoc = GetDocument();
+	COSMCtrlCircle circleOnDraw;
+	int circleSize = m_ctrlOSM.m_Circles.GetSize();
+	for(int i = 0; i<circleSize;i++)
+	{
+		circleOnDraw = m_ctrlOSM.m_Circles.ElementAt(i);
+		
+		if (circleOnDraw.m_bSelected==TRUE)
+		{
+			CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
+			COSMCtrlAppView* pView = (COSMCtrlAppView*)pFrame->pLeftView;
+			//pFrame->SetActiveView(pView);
+			CEdit *pBoxOne, *pBoxTwo;
+			pBoxOne = (CEdit*) pView->GetDlgItem(IDC_EDIT1);
+			pBoxTwo = (CEdit*) pView->GetDlgItem(IDC_EDIT2);
+			StationStruct station;
+			int testIntaa = circleOnDraw.relatedBus;
+			pDoc->m_Stations.GetStation(circleOnDraw.relatedBus,&station);
+
+			CString editBusNum;
+			editBusNum.Format(_T("%d"), station.busNumber);
+			
+			CString editBusVoltageM;
+			editBusVoltageM.Format(_T("%f"), station.voltageM[currentTimeInt]);
+			pBoxOne->SetWindowTextW(editBusNum);
+			pBoxTwo->SetWindowTextW(editBusVoltageM);
+			break;
+		}
+
+	}
 }
