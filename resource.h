@@ -74,6 +74,7 @@
 #define IDC_PROGRESS1                   1027
 #define IDC_H_SLIDER                    1028
 #define IDC_H_SLIDER_ECHO               1031
+#define IDC_ChartCtrl1                  1032
 #define ID_ZOOM_0                       32772
 #define ID_ZOOM_1                       32773
 #define ID_ZOOM_2                       32774
@@ -148,7 +149,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        137
 #define _APS_NEXT_COMMAND_VALUE         32856
-#define _APS_NEXT_CONTROL_VALUE         1032
+#define _APS_NEXT_CONTROL_VALUE         1033
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

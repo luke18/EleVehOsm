@@ -235,11 +235,12 @@ protected:
   afx_msg void OnViewGotoCoordinates();
   afx_msg void OnViewDeltaMode();
   afx_msg void OnUpdateViewDeltaMode(CCmdUI* pCmdUI);
-  afx_msg void OnAppConfm();
+  
 
   friend class CMainFrame;
 public:
 	afx_msg void OnHelpCalculate();
+	afx_msg void OnAppConfm();
 };
 
 #ifndef _DEBUG  // debug version in OSMCtrlAppView.cpp

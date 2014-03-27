@@ -560,8 +560,9 @@ for (int i = 2; i < 35; i++)
 		}
 		else 
 		{
-			outPdPower[j] = 0;
-			outQdPower[j] = 0;
+			//have the assuming data matching with load changes in a day
+			outPdPower[j] = 24*atof(loadArray[2+j][2*3-4].c_str())/atof(loadArray[2-1][2*3-4].c_str());
+			outQdPower[j] = 12*atof(loadArray[2+j][2*3-4].c_str())/atof(loadArray[2-1][2*3-4].c_str());
 		}
 		outPgPower[j] = 0;
 		outQgPower[j] = 0;
@@ -646,7 +647,7 @@ for (int i=0;i<96;i++)
 	//mclTerminateApplication();
 }
 end calculate in matlab*/
-
+currentTimeInt = 10;
 UpdateStations(40);
 CString strarray;
 
@@ -1491,7 +1492,7 @@ void COSMCtrlAppView::OnDrawStation()
 }
 */
  
-//every time draw the visualization
+//every time draw the visualization, circle R relates to pdpower
 void COSMCtrlAppView::UpdateStations(int timeNumber) 
 {
 	m_ctrlOSM.m_Markers.RemoveAll();
@@ -1508,7 +1509,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 		
 		sampleCircle.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
 		//sampleCircle.m_fRadius = (station.pdPower[timeNumber]*10);
-		sampleCircle.m_fRadius = timeNumber*20;
+		sampleCircle.m_fRadius = 3*(10*station.pdPower[currentTimeInt]+station.pgPower[currentTimeInt]);
 		sampleCircle.relatedBus = i;
 		if(station.volGrade == 220) 
 		{
@@ -1548,7 +1549,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 		sampleCircle.m_nMaxZoomLevel = 18;
 		CString tooltips;
 		tooltips.Format(_T("%d"), station.busNumber);
-		sampleCircle.m_sToolTipText = tooltips;
+		sampleCircle.m_sToolTipText = station.busName;
 		sampleCircle.m_bDraggable = FALSE; //Allow the circle to be draggable
 		sampleCircle.m_bEditable = TRUE; //Allow the circle to be editable
 		m_ctrlOSM.m_Circles.Add(sampleCircle);
@@ -2709,14 +2710,18 @@ void COSMCtrlAppView::OnAppConfm()
 	pDoc = GetDocument();
 	COSMCtrlCircle circleOnDraw;
 	int circleSize = m_ctrlOSM.m_Circles.GetSize();
+	CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
+	CFormCommandView* pView = (CFormCommandView*)pFrame->pLeftView;
+	double xTime[96];
+	for (int i=0;i<96;i++)
+		xTime[i]=i;
 	for(int i = 0; i<circleSize;i++)
 	{
 		circleOnDraw = m_ctrlOSM.m_Circles.ElementAt(i);
 		
 		if (circleOnDraw.m_bSelected==TRUE)
 		{
-			CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
-			COSMCtrlAppView* pView = (COSMCtrlAppView*)pFrame->pLeftView;
+			
 			//pFrame->SetActiveView(pView);
 			CEdit *pBoxOne, *pBoxTwo;
 			pBoxOne = (CEdit*) pView->GetDlgItem(IDC_EDIT1);
@@ -2731,8 +2736,16 @@ void COSMCtrlAppView::OnAppConfm()
 			pBoxOne->SetWindowTextW(station.busName);
 			pBoxTwo->SetWindowTextW(editBusVoltageM);
 			
+
+			pView->UpdateLineGraph(xTime,station.pdPower, 96);
 			break;
 		}
 
+		
+
 	}
+
+
+
+	
 }
