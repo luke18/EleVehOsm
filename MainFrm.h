@@ -15,6 +15,7 @@ public:
 	friend class CFormCommandView;
 	CFormCommandView *pLeftView;
 	COSMCtrlAppView *pRightView;
+	CInfoView *pInfoView;
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
 // Implementation

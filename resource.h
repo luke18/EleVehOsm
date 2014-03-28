@@ -77,9 +77,11 @@
 #define IDC_H_SLIDER                    1028
 #define IDC_H_SLIDER_ECHO               1031
 #define IDC_ChartCtrl1                  1032
-#define IDC_SLIDER1                     1033
 #define IDC_SLIDER_TIME                 1033
 #define IDC_TIME_ECHO                   1034
+#define IDC_STATIC_HEADLINE             1035
+#define IDC_EDIT3                       1036
+#define IDC_EDIT4                       1037
 #define ID_ZOOM_0                       32772
 #define ID_ZOOM_1                       32773
 #define ID_ZOOM_2                       32774
@@ -154,7 +156,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        139
 #define _APS_NEXT_COMMAND_VALUE         32856
-#define _APS_NEXT_CONTROL_VALUE         1035
+#define _APS_NEXT_CONTROL_VALUE         1038
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -268,6 +268,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 
 	pRightView = (COSMCtrlAppView*)m_splitter3.GetPane(1,0);
 	pLeftView = (CFormCommandView*)m_splitter3.GetPane(0,0);
+	pInfoView= (CInfoView*)m_splitter.GetPane(0,1);
     return TRUE; 
 	
 	return CFrameWnd::OnCreateClient(lpcs, pContext);

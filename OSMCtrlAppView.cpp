@@ -23,6 +23,7 @@
 
 #include "libfinalflow.h"
 #include "FormCommandView.h"
+#include "InfoView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -2710,49 +2711,76 @@ void COSMCtrlAppView::OnHelpCalculate()
 	/*end calculate in matlab*/
 }
 
+//update only the stations
 void COSMCtrlAppView::OnAppConfm()
 {
+	m_ctrlOSM.m_Markers.RemoveAll();
+	m_ctrlOSM.m_Polylines.RemoveAll();
+	m_ctrlOSM.m_Circles.RemoveAll();
 	pDoc = GetDocument();
-	COSMCtrlCircle circleOnDraw;
-	int circleSize = m_ctrlOSM.m_Circles.GetSize();
-	CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
-	CFormCommandView* pView = (CFormCommandView*)pFrame->pLeftView;
-	double xTime[96];
-	for (int i=0;i<96;i++)
-		xTime[i]=i;
-	for(int i = 0; i<circleSize;i++)
-	{
-		circleOnDraw = m_ctrlOSM.m_Circles.ElementAt(i);
-		
-		if (circleOnDraw.m_bSelected==TRUE)
-		{
-			selectedNum = i;
-			//pFrame->SetActiveView(pView);
-			CEdit *pBoxOne, *pBoxTwo;
-			pBoxOne = (CEdit*) pView->GetDlgItem(IDC_EDIT1);
-			pBoxTwo = (CEdit*) pView->GetDlgItem(IDC_EDIT2);
-			StationStruct station;
-			int testIntaa = circleOnDraw.relatedBus;
-			pDoc->m_Stations.GetStation(circleOnDraw.relatedBus,&station);
-			
-			CString editBusVoltageM;
-
-			editBusVoltageM.Format(_T("%f"), station.voltageM[currentTimeInt]);
-			pBoxOne->SetWindowTextW(station.busName);
-			pBoxTwo->SetWindowTextW(editBusVoltageM);
-			
-
-			pView->UpdateLineGraph(xTime,station.pdPower, 96);
-			break;
-		}
-
-		
-
-	}
-
-
-
+	int size = pDoc->m_Stations.GetStationCount(); // get size of array in doc
 	
+	/*draw circle for bus*/
+	for(int i = 0; i<size; i++) {
+		StationStruct station;
+		pDoc->m_Stations.GetStation(i,&station);
+		COSMCtrlCircle sampleCircle;
+		
+		sampleCircle.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
+		//sampleCircle.m_fRadius = (station.pdPower[timeNumber]*10);
+		sampleCircle.m_fRadius = 3*(10*station.pdPower[currentTimeInt]+station.pgPower[currentTimeInt]);
+		sampleCircle.relatedBus = i;
+		if(station.volGrade == 220) 
+		{
+			#ifdef COSMCTRL_NOD2D
+			sampleCircle.m_colorBrush = Gdiplus::Color(0,0,128);
+			#else
+			sampleCircle.m_colorBrush = D2D1::ColorF(0,0,128);
+			#endif
+			sampleCircle.m_nMinZoomLevel = 0;
+		}
+		else if (station.volGrade == 110) 
+		{
+			#ifdef COSMCTRL_NOD2D
+			sampleCircle.m_colorBrush = Gdiplus::Color(0,255,255);
+			#else
+			sampleCircle.m_colorBrush = D2D1::ColorF(0,255,255);
+			#endif
+			sampleCircle.m_nMinZoomLevel = 0;
+		}
+		else if (station.volGrade == 35) 
+		{
+			#ifdef COSMCTRL_NOD2D
+			sampleCircle.m_colorBrush = Gdiplus::Color(128,128,0);
+			#else
+			sampleCircle.m_colorBrush = D2D1::ColorF(128,128,0);
+			#endif
+			sampleCircle.m_nMinZoomLevel = 11;
+		}
+		#ifdef COSMCTRL_NOD2D
+		sampleCircle.m_DashStyle = Gdiplus::DashStyleDashDot;
+		sampleCircle.m_colorPen = Gdiplus::Color(255,69,0);
+		#else
+		sampleCircle.m_DashStyle = D2D1_DASH_STYLE_DASH_DOT;
+		sampleCircle.m_colorPen = D2D1::ColorF(255,69,0);
+		#endif
+		sampleCircle.m_fLinePenWidth = 2;
+		sampleCircle.m_nMaxZoomLevel = 18;
+		CString tooltips;
+		tooltips.Format(_T("%d"), station.busNumber);
+		sampleCircle.m_sToolTipText = station.busName;
+		sampleCircle.m_bDraggable = FALSE; //Allow the circle to be draggable
+		sampleCircle.m_bEditable = TRUE; //Allow the circle to be editable
+		m_ctrlOSM.m_Circles.Add(sampleCircle);
+	
+	}
+	/*end draw circle for bus*/
+
+	m_ctrlOSM.m_Circles.GetAt(selectedNum).m_bSelected = TRUE;
+
+	//let stations update
+	OnSwitchMarker();
+	OnSwitchNormal();
 }
 
 void COSMCtrlAppView::OnLButtonUp(UINT nFlags, CPoint point)
@@ -2787,6 +2815,7 @@ void COSMCtrlAppView::DblClickUpdate()
 	int circleSize = m_ctrlOSM.m_Circles.GetSize();
 	CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
 	CFormCommandView* pView = (CFormCommandView*)pFrame->pLeftView;
+	CInfoView *pIView = (CInfoView*)pFrame->pInfoView;
 	double xTime[96];
 	for (int i=0;i<96;i++)
 		xTime[i]=i;
@@ -2798,23 +2827,31 @@ void COSMCtrlAppView::DblClickUpdate()
 		{
 			selectedNum = i;
 			//pFrame->SetActiveView(pView);
-			CEdit *pBoxOne, *pBoxTwo;
-			pBoxOne = (CEdit*) pView->GetDlgItem(IDC_EDIT1);
-			pBoxTwo = (CEdit*) pView->GetDlgItem(IDC_EDIT2);
+			CEdit *pBoxOne, *pBoxTwo, *pBoxThree, *pBoxFour;
+			pBoxOne = (CEdit*) pIView->GetDlgItem(IDC_EDIT1);
+			pBoxTwo = (CEdit*) pIView->GetDlgItem(IDC_EDIT2);
+			pBoxThree = (CEdit*) pIView->GetDlgItem(IDC_EDIT3);
+			pBoxFour = (CEdit*) pIView->GetDlgItem(IDC_EDIT4);
 			StationStruct station;
 			int testIntaa = circleOnDraw.relatedBus;
 			pDoc->m_Stations.GetStation(circleOnDraw.relatedBus,&station);
 			
-			CString editBusVoltageM;
+			CString editBusVoltageG,editBusVoltageM,editBusVoltageA;
 
 			editBusVoltageM.Format(_T("%f"), station.voltageM[currentTimeInt]);
+			editBusVoltageG.Format(_T("%d"), station.volGrade);
+			editBusVoltageA.Format(_T("%f"), station.voltageA[currentTimeInt]);
 			pBoxOne->SetWindowTextW(station.busName);
-			pBoxTwo->SetWindowTextW(editBusVoltageM);
-			
+			pBoxTwo->SetWindowTextW(editBusVoltageG);
+			pBoxThree->SetWindowTextW(editBusVoltageM);
+			pBoxFour->SetWindowTextW(editBusVoltageA);
 
 			pView->UpdateLineGraph(xTime,station.pdPower, 96);
 			break;
 		}
+
+		
+
 	}
 }
 
