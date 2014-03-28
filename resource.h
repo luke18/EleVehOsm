@@ -28,7 +28,6 @@
 #define IDS_OSMCTRL_MAP_OPERATIONS_UPDATE_ZOOM2 137
 #define IDD_FunctionView                137
 #define IDS_CLICK_ON_MAP_FOR_REFRESHTILE 138
-
 #define IDD_InfoView                    138
 #define IDS_OSMCTRL_DELETE_FILES_STATS  139
 #define IDS_OSMCTRL_DOWNLOAD_TILES_STATS 140
@@ -78,6 +77,9 @@
 #define IDC_H_SLIDER                    1028
 #define IDC_H_SLIDER_ECHO               1031
 #define IDC_ChartCtrl1                  1032
+#define IDC_SLIDER1                     1033
+#define IDC_SLIDER_TIME                 1033
+#define IDC_TIME_ECHO                   1034
 #define ID_ZOOM_0                       32772
 #define ID_ZOOM_1                       32773
 #define ID_ZOOM_2                       32774
@@ -152,7 +154,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        139
 #define _APS_NEXT_COMMAND_VALUE         32856
-#define _APS_NEXT_CONTROL_VALUE         1033
+#define _APS_NEXT_CONTROL_VALUE         1035
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
