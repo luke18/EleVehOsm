@@ -205,6 +205,8 @@ BEGIN_MESSAGE_MAP(COSMCtrlAppView, CView)
   ON_UPDATE_COMMAND_UI(ID_VIEW_DELTAMODE, &COSMCtrlAppView::OnUpdateViewDeltaMode)
   ON_COMMAND(ID_HELP_CALCULATE, &COSMCtrlAppView::OnHelpCalculate)
   ON_COMMAND(ID_APP_CONFM, COSMCtrlAppView::OnAppConfm) 
+  ON_WM_LBUTTONUP()
+  ON_WM_LBUTTONDBLCLK()
   END_MESSAGE_MAP()
 
 COSMCtrlAppView::COSMCtrlAppView() : m_nGPSPort(0),
@@ -648,6 +650,7 @@ for (int i=0;i<96;i++)
 }
 end calculate in matlab*/
 currentTimeInt = 10;
+selectedNum = 3;
 UpdateStations(40);
 CString strarray;
 
@@ -1556,6 +1559,8 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 	
 	}
 	/*end draw circle for bus*/
+
+	m_ctrlOSM.m_Circles.GetAt(selectedNum).m_bSelected = TRUE;
 
 	/*begin draw line for branch*/
 	for (int i = 0; i<52; i++) 
@@ -2721,7 +2726,7 @@ void COSMCtrlAppView::OnAppConfm()
 		
 		if (circleOnDraw.m_bSelected==TRUE)
 		{
-			
+			selectedNum = i;
 			//pFrame->SetActiveView(pView);
 			CEdit *pBoxOne, *pBoxTwo;
 			pBoxOne = (CEdit*) pView->GetDlgItem(IDC_EDIT1);
@@ -2749,3 +2754,67 @@ void COSMCtrlAppView::OnAppConfm()
 
 	
 }
+
+void COSMCtrlAppView::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	
+
+
+	__super::OnLButtonUp(nFlags, point);
+}
+
+
+void COSMCtrlAppView::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	
+	__super::OnLButtonDblClk(nFlags, point);
+}
+
+void COSMCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
+	COSMCtrlAppView* pView = (COSMCtrlAppView*)pFrame->pRightView;
+	pView->DblClickUpdate();
+	__super::OnLButtonDblClk(nFlags, point);
+}
+
+void COSMCtrlAppView::DblClickUpdate()
+{
+	pDoc = GetDocument();
+	COSMCtrlCircle circleOnDraw;
+	int circleSize = m_ctrlOSM.m_Circles.GetSize();
+	CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
+	CFormCommandView* pView = (CFormCommandView*)pFrame->pLeftView;
+	double xTime[96];
+	for (int i=0;i<96;i++)
+		xTime[i]=i;
+	for(int i = 0; i<circleSize;i++)
+	{
+		circleOnDraw = m_ctrlOSM.m_Circles.ElementAt(i);
+		
+		if (circleOnDraw.m_bSelected==TRUE)
+		{
+			selectedNum = i;
+			//pFrame->SetActiveView(pView);
+			CEdit *pBoxOne, *pBoxTwo;
+			pBoxOne = (CEdit*) pView->GetDlgItem(IDC_EDIT1);
+			pBoxTwo = (CEdit*) pView->GetDlgItem(IDC_EDIT2);
+			StationStruct station;
+			int testIntaa = circleOnDraw.relatedBus;
+			pDoc->m_Stations.GetStation(circleOnDraw.relatedBus,&station);
+			
+			CString editBusVoltageM;
+
+			editBusVoltageM.Format(_T("%f"), station.voltageM[currentTimeInt]);
+			pBoxOne->SetWindowTextW(station.busName);
+			pBoxTwo->SetWindowTextW(editBusVoltageM);
+			
+
+			pView->UpdateLineGraph(xTime,station.pdPower, 96);
+			break;
+		}
+	}
+}
+

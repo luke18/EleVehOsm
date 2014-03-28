@@ -6325,6 +6325,7 @@ void COSMCtrl::HandleLButtonDblClickMap(UINT /*nFlags*/, CPoint point, MapItem /
   }
 }
 
+/*
 void COSMCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
   //Call the event handler if possible
@@ -6380,7 +6381,7 @@ void COSMCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
   //Let the base class do its thing
   CStatic::OnLButtonDblClk(nFlags, point);
 }
-
+*/
 void COSMCtrl::StartDrag(const CPoint& point, MapItem item, INT_PTR nItem, INT_PTR nSubItem)
 {
   //Capture the mouse and remember the initial drag position

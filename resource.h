@@ -26,7 +26,10 @@
 #define IDD_DIALOG3                     136
 #define IDD_FormCommand                 136
 #define IDS_OSMCTRL_MAP_OPERATIONS_UPDATE_ZOOM2 137
+#define IDD_FunctionView                137
 #define IDS_CLICK_ON_MAP_FOR_REFRESHTILE 138
+
+#define IDD_InfoView                    138
 #define IDS_OSMCTRL_DELETE_FILES_STATS  139
 #define IDS_OSMCTRL_DOWNLOAD_TILES_STATS 140
 #define IDS_OSMCTRL_RERENDER_TILES_STATS 141
@@ -147,7 +150,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        137
+#define _APS_NEXT_RESOURCE_VALUE        139
 #define _APS_NEXT_COMMAND_VALUE         32856
 #define _APS_NEXT_CONTROL_VALUE         1033
 #define _APS_NEXT_SYMED_VALUE           104

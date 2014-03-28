@@ -1,6 +1,8 @@
 #pragma once
 #include "FormCommandView.h"
 #include "OSMCtrlAppView.h"
+#include "FunctionView.h"
+#include "InfoView.h"
 
 
 class CMainFrame : public CFrameWnd
@@ -18,6 +20,8 @@ public:
 // Implementation
 public:
 	CSplitterWnd m_splitter;
+	CSplitterWnd m_splitter2;
+	CSplitterWnd m_splitter3;
 	virtual ~CMainFrame();
 protected:
 	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);

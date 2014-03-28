@@ -875,6 +875,7 @@ void CChartCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 	CWnd::OnLButtonUp(nFlags, point);
 }
 
+
 void CChartCtrl::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
 	SendMouseEvent(CChartMouseListener::LButtonDoubleClick, point);

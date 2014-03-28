@@ -38,6 +38,7 @@ public:
 	double outPdPower[96], outQdPower[96];
 	double outPgPower[96], outQgPower[96];
 	int currentTimeInt;
+	int selectedNum;
 
 // Operations
 public:
@@ -57,6 +58,7 @@ protected:
 public:
 	virtual ~COSMCtrlAppView();
 	void UpdateStations(int timeNumber); // Fetch stations in doc and show on map
+	void DblClickUpdate();
 	void OnZoomSp();
 	void OnSwitchNormal();
 	void OnSwitchMarker();
@@ -241,6 +243,8 @@ protected:
 public:
 	afx_msg void OnHelpCalculate();
 	afx_msg void OnAppConfm();
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // debug version in OSMCtrlAppView.cpp
