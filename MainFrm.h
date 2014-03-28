@@ -33,8 +33,8 @@ protected:  // control bar embedded members
 // Generated message map functions
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-  afx_msg void OnUpdatePosition(CCmdUI* pCmdUI);
-  afx_msg void OnUpdateLength(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePosition(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateLength(CCmdUI* pCmdUI);
 	DECLARE_MESSAGE_MAP()
 };
 
