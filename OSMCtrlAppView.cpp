@@ -575,7 +575,8 @@ for(int i = 1; i < 77; i++)
 		station.qdPower[j] = station.qdMax*atof(loadratioArray[j+1][0].c_str());
 		station.voltageM[j] = atof(busdataArray[i][10].c_str());
 		station.voltageA[j] = atof(busdataArray[i][11].c_str());
-		station.load[j] = station.pdPower[j];
+		station.loadP[j] = station.pdPower[j];
+		station.loadQ[j] = station.qdPower[j];
 	}
 
 	pDoc->m_Stations.push_back(station);
@@ -634,6 +635,16 @@ for (int i = 1; i < 161; i++)
 	branch.angmin = atof(branchdataArray[i][11].c_str());
 	branch.angmax = atof(branchdataArray[i][12].c_str());
 	branch.voltagegrade = atof(branchdataArray[i][13].c_str());
+	branch.startBus = FindBusNumByI(branch.fbus, pDoc->m_Stations);
+	branch.endBus = FindBusNumByI(branch.tbus, pDoc->m_Stations);
+
+	for (int j = 0; j < 96; j++)
+	{
+		branch.fromP[j] = 0;
+		branch.toP[j] = 0;
+		branch.fromQ[j] = 0;
+		branch.toQ[j] = 0;
+	}
 	pDoc->m_Branchs.push_back(branch);
 }
 /* end put branch data*/
@@ -1623,7 +1634,8 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 
 		sampleCircle2.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
 		//sampleCircle2.m_fRadius = (station.pdPower[timeNumber]*10);
-		sampleCircle2.m_fRadius = 300*(log(station.load[currentTimeInt]+2));
+		double tmpladoddddd = station.loadP[currentTimeInt];
+		sampleCircle2.m_fRadius = 300*(log(station.loadP[currentTimeInt]+2));
 		sampleCircle2.relatedBus = i;
 		if(station.volGrade == 220) 
 		{
@@ -1674,7 +1686,6 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 	m_ctrlOSM.m_Circles.GetAt(selectedNum).m_bSelected = TRUE;
 
 	/*begin draw line for branch*/
-	double busBranchArray[35][35];
 	for(int i =0;i<35;i++)
 		for (int j=0;j<35;j++)
 			busBranchArray[i][j] = 0;
@@ -1682,16 +1693,16 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 	{
 		BranchStruct branch;
 		branch = pDoc->m_Branchs[i];
-		int startBus, endBus;
-		startBus = FindBusNumByI(branch.fbus, pDoc->m_Stations);
-		endBus = FindBusNumByI(branch.tbus, pDoc->m_Stations);
+		//int startBus, endBus;
+		//branch.startBus = FindBusNumByI(branch.fbus, pDoc->m_Stations);
+		//branch.endBus = FindBusNumByI(branch.tbus, pDoc->m_Stations);
 		StationStruct station1;
 		StationStruct station2;
-		station1 = pDoc->m_Stations[startBus];
-		station2 = pDoc->m_Stations[endBus];
+		station1 = pDoc->m_Stations[branch.startBus];
+		station2 = pDoc->m_Stations[branch.endBus];
 		//pDoc->m_Stations.GetStation(startBus-1,&station1);
 		//pDoc->m_Stations.GetStation(endBus-1,&station2);
-		if(busBranchArray[startBus][endBus] == 0 && startBus!=endBus)
+		if(busBranchArray[branch.startBus][branch.endBus] == 0 && branch.startBus!=branch.endBus)
 		{
 			COSMCtrlPolyline samplePolyline;
 			COSMCtrlNode tempPosition(station1.longitude, station1.latitude);
@@ -1702,7 +1713,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 
 			samplePolyline.relatedBranch =i;
 
-			if (startBus > 10 || endBus > 10) {
+			if (branch.startBus > 10 || branch.endBus > 10) {
 				samplePolyline.m_nMinZoomLevel = 11;
 				samplePolyline.m_nMaxZoomLevel = 18;
 			}
@@ -1724,7 +1735,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 
 			m_ctrlOSM.m_Polylines.Add(samplePolyline);
 		}
-		busBranchArray[startBus][endBus] += 1;
+		busBranchArray[branch.startBus][branch.endBus] += 1;
 	}
 	/*end draw line for branch*/
 
@@ -2802,12 +2813,13 @@ void COSMCtrlAppView::OnHelpCalculate()
 	double branchArray[2080];
 	double outBusArray[988];
 	double outGenArray[42];
-	double outBranchArray[2080];
+	double outBranchArray[2720];
 	mclmcrInitialize();
 	libgodflowInitialize();
 	mwArray in1(76, 13, mxDOUBLE_CLASS, mxREAL);
 	mwArray in2(2, 21, mxDOUBLE_CLASS, mxREAL);
 	mwArray in3(160, 13, mxDOUBLE_CLASS, mxREAL);
+	double tmpFather;
 
 	for (int i=0;i<96;i++)
 	{
@@ -2898,7 +2910,7 @@ void COSMCtrlAppView::OnHelpCalculate()
 		//put result into doc
 		out1.GetData(outBusArray,988);
 		out2.GetData(outGenArray, 42);
-		out3.GetData(outBranchArray, 2080);
+		out3.GetData(outBranchArray, 2720);
 		//StationStruct *station = new StationStruct;
 		
 		for(int j=0;j<busSize;j++)
@@ -2923,11 +2935,24 @@ void COSMCtrlAppView::OnHelpCalculate()
 			pDoc->m_Branchs[j].fromQ[i] = outBranchArray[14*160+j];
 			pDoc->m_Branchs[j].toP[i] = outBranchArray[15*160+j];
 			pDoc->m_Branchs[j].toQ[i] = outBranchArray[16*160+j];
+
+			//calculate load of a bus
+			
+			//tmpFather = pDoc->m_Stations[FindBusNumByI(pDoc->m_Branchs[j].fbus, pDoc->m_Stations)].father;
+			double tmpfromp = pDoc->m_Branchs[j].fromP[i];
+			int tmpnumer = pDoc->m_Branchs[j].startBus;
+			if (pDoc->m_Branchs[j].fromP[i] > 0)
+				pDoc->m_Stations[pDoc->m_Branchs[j].startBus].loadP[i] += pDoc->m_Branchs[j].fromP[i];
+			
+			//pDoc->m_Stations[pDoc->m_Branchs[j].startBus].loadQ[i] += pDoc->m_Branchs[j].fromQ[i];
 		}
-		UpdateStations(40);
+		
+		
 		// Call the application and library termination routine
 
 	}
+	double tmpppp = pDoc->m_Stations[2].loadP[15];
+	UpdateStations(40);
 	libgodflowTerminate();
 	mclTerminateApplication();
 	/*end calculate in matlab*/

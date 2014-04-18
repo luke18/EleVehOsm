@@ -39,6 +39,7 @@ public:
 	double outPgPower[96], outQgPower[96];
 	int currentTimeInt;
 	int selectedNum;
+	double busBranchArray[35][35];
 
 // Operations
 public:
