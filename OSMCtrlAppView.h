@@ -92,6 +92,7 @@ protected:
   void DoAddressLookup(CPoint point);
   void DoRefreshTile(CPoint point);
   void DoTileProperties(CPoint point);
+  int FindBusNumByI(double bus_i, std::vector<StationStruct> m_Stations); //Find the father number of the bus_i
   //void ReadInBusData();
   
 #ifdef COSMCTRL_NOD2D

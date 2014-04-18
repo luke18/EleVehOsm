@@ -372,7 +372,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>gdiplus.lib;wininet.lib;winhttp.lib;mclmcr.lib;libmex.lib;libmx.lib;mclmcrrt.lib;libfinalflow.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gdiplus.lib;wininet.lib;winhttp.lib;mclmcr.lib;libmex.lib;libmx.lib;mclmcrrt.lib;libgodflow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -958,7 +958,6 @@
     <None Include="ChartCtrl\ChartLabel.inl" />
     <None Include="ChartCtrl\ChartPointsArray.inl" />
     <None Include="ChartCtrl\ChartSerieBase.inl" />
-    <None Include="libfinalflow.dll" />
     <None Include="loaddata.csv" />
     <None Include="res\icon1.png" />
     <None Include="res\OSMCtrlApp.ico" />
@@ -968,9 +967,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OSMCtrlApp.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="libfinalflow.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

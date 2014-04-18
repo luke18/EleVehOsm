@@ -26,6 +26,7 @@ to maintain a single distribution point for the source code.
 #define __OSMCTRLPOLYLINE_H__
 
 #include "OSMCtrlNode.h"
+#include <vector>
 
 
 ////////////////////////////////// Classes ////////////////////////////////////
@@ -58,6 +59,7 @@ public:
   BOOL   GetBoundingRect(COSMCtrlPosition& topLeft, COSMCtrlPosition& bottomRight) const;
   
 //Member variables
+  int relatedBranch;
   CArray<COSMCtrlNode, COSMCtrlNode&> m_Nodes;                //The array of position for this polyline
   float                               m_fLinePenWidth;        //The width of the line to draw
 #ifdef COSMCTRL_NOD2D

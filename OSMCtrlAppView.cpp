@@ -11,6 +11,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <math.h>
 
 #ifdef COSMCTRL_NOWINHTTP //CNominatin currently only supports Wininet no WinHTTP
 #include "cnominatim.h" //If you get a compilation error about this missing header file, then you need to download my CNominatim class from http://www.naughter.com/nominatim.html
@@ -21,7 +22,7 @@
 #endif
 #include "GotoCoordinatesDlg.h"
 
-#include "libfinalflow.h"
+#include "libgodflow.h"
 #include "FormCommandView.h"
 #include "InfoView.h"
 
@@ -455,10 +456,10 @@ int COSMCtrlAppView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 using namespace std;
 /* following codes read the csv file into doc*/
-/*read in bus2num*/
-ifstream in("bus2num.csv");
+/*read in busdata*/
+ifstream in("busdata.csv");
 string line, field;
-vector< vector<string> > bus2numArray;  // the 2D array
+vector< vector<string> > busdataArray;  // the 2D array
 vector<string> v;                // array of values for one line only
 
 while ( getline(in,line) ) {  // get next line in file
@@ -469,9 +470,9 @@ while ( getline(in,line) ) {  // get next line in file
 		v.push_back(field);  // add each field to the 1D array
 	}
 	
-	bus2numArray.push_back(v);  // add the 1D array to the 2D array
+	busdataArray.push_back(v);  // add the 1D array to the 2D array
 }
-/*end read in bus2num*/
+/*end read in busdata*/
 
 /*read in day0
 ifstream in1("day0.csv");
@@ -490,9 +491,9 @@ while ( getline(in1,line) ) {  // get next line in file
 }
 end read in day0*/
 
-/*read in load data*/
-ifstream in1("loaddata.csv");
-vector< vector<string> > loadArray;  // the 2D array
+/*read in gendata*/
+ifstream in1("gendata.csv");
+vector< vector<string> > gendataArray;  // the 2D array
 //vector<string> v;                // array of values for one line only
 
 while ( getline(in1,line) ) {  // get next line in file
@@ -503,13 +504,13 @@ while ( getline(in1,line) ) {  // get next line in file
 		v.push_back(field);  // add each field to the 1D array
 	}
 
-	loadArray.push_back(v);  // add the 1D array to the 2D array
+	gendataArray.push_back(v);  // add the 1D array to the 2D array
 }
-/*end read in load data */
+/*end read in gendata */
 
-/*read in bracnnum*/
-ifstream in2("branchnum.csv");
-vector< vector<string> > branchnumArray;  // the 2D array
+/*read in branchdata*/
+ifstream in2("branchdata.csv");
+vector< vector<string> > branchdataArray;  // the 2D array
 //vector<string> v;                // array of values for one line only
 
 while ( getline(in2,line) ) {  // get next line in file
@@ -520,65 +521,122 @@ while ( getline(in2,line) ) {  // get next line in file
 		v.push_back(field);  // add each field to the 1D array
 	}
 
-	branchnumArray.push_back(v);  // add the 1D array to the 2D array
+	branchdataArray.push_back(v);  // add the 1D array to the 2D array
 }
-/*end read in bracnnum*/
+/*end read in branchdata*/
 
+/*read in loadratio*/
+ifstream in3("loadratio.csv");
+vector< vector<string> > loadratioArray;  // the 2D array
+//vector<string> v;                // array of values for one line only
+
+while ( getline(in3,line) ) {  // get next line in file
+	v.clear();
+	stringstream ss(line);
+
+	while (getline(ss,field,',')) { // break line into comma delimitted fields
+		v.push_back(field);  // add each field to the 1D array
+	}
+
+	loadratioArray.push_back(v);  // add the 1D array to the 2D array
+}
+/*end read in loadratio*/
 
 /*put data into doc*/
 
 COSMCtrlAppDoc*pDoc = GetDocument();
-
-for(int i = 0; i < 2; i++)
+/*put bus data*/
+StationStruct station;
+for(int i = 1; i < 77; i++)
 {
-	outBusName = bus2numArray[i][1].c_str();
-	outLongitude =  atof(bus2numArray[i][2].c_str());
-	outLatitude = atof(bus2numArray[i][3].c_str());
-	outVolGrade = atoi(bus2numArray[i][4].c_str());
-	outBusNumber = atoi(bus2numArray[i][5].c_str());
+
+	station.busName = busdataArray[i][0].c_str();
+	station.bus_i = atof(busdataArray[i][3].c_str());
+	station.longitude =  atof(busdataArray[i][1].c_str());
+	station.latitude = atof(busdataArray[i][2].c_str());
+	station.type =  atof(busdataArray[i][4].c_str());
+	station.pdMax = atof(busdataArray[i][5].c_str());
+	station.qdMax = atof(busdataArray[i][6].c_str());
+	station.gs =atof(busdataArray[i][7].c_str());
+	station.bs = atof(busdataArray[i][8].c_str());
+	station.area = atof(busdataArray[i][9].c_str());
+	station.baseKv = atof(busdataArray[i][12].c_str());
+	station.zone = atof(busdataArray[i][13].c_str());
+	station.vmax = atof(busdataArray[i][14].c_str());
+	station.vmin = atof(busdataArray[i][15].c_str());
+	station.capacity = atof(busdataArray[i][16].c_str());
+	station.volGrade = atof(busdataArray[i][17].c_str());
+	station.father = atof(busdataArray[i][18].c_str());
+	station.kind = atof(busdataArray[i][19].c_str());
+	//station.busNumber = atoi(busdataArray[i][5].c_str());
 	for (int j = 0; j < 96; j++)
 	{
-		outPdPower[j] = 0;
-		outQdPower[j] = 0;
-		outPgPower[j] = atof(loadArray[2+j][17+2*i+1].c_str());
-		outQgPower[j] = atof(loadArray[2+j][17+2*i+2].c_str());
+		station.pdPower[j] = station.pdMax*atof(loadratioArray[j+1][0].c_str());
+		station.qdPower[j] = station.qdMax*atof(loadratioArray[j+1][0].c_str());
+		station.voltageM[j] = atof(busdataArray[i][10].c_str());
+		station.voltageA[j] = atof(busdataArray[i][11].c_str());
+		station.load[j] = station.pdPower[j];
 	}
-	pDoc->m_Stations.AddStation(outBusName, outLongitude,outLatitude,outVolGrade, outBusNumber, outPdPower, outQdPower, outPgPower,outQgPower);
-}
 
-for (int i = 2; i < 35; i++)
+	pDoc->m_Stations.push_back(station);
+}
+/*end put bus data*/
+
+/*electical vehicle 
+pDoc->Vehicle.busName = loadArray[0][22].c_str();
+pDoc->Vehicle.longitude = 121.83555;
+pDoc->Vehicle.latitude = 31.49555;
+for (int j = 0; j < 96; j++)
 {
-	outBusName = bus2numArray[i][1].c_str();
-	outLongitude =  atof(bus2numArray[i][2].c_str());
-	outLatitude = atof(bus2numArray[i][3].c_str());
-	outVolGrade = atoi(bus2numArray[i][4].c_str());
-	outBusNumber = atoi(bus2numArray[i][5].c_str());
+	pDoc->Vehicle.loadP[j] = atof(loadArray[2+j][22].c_str()); //before adjust
+	pDoc->Vehicle.pdPower[j] = atof(loadArray[2+j][23].c_str()); //after adjust
+}
+end electical vehicle */
+
+/* put gen data*/
+GenStruct generator;
+for (int i = 1; i < 3; i++)
+{
+	generator.bus_i = atof(gendataArray[i][0].c_str());
+	generator.pgmax = atof(gendataArray[i][1].c_str());
+	generator.qgmax = atof(gendataArray[i][2].c_str());
+	generator.qmax = atof(gendataArray[i][3].c_str());
+	generator.qmin = atof(gendataArray[i][4].c_str());
+	generator.vg = atof(gendataArray[i][5].c_str());
+	generator.mbase = atof(gendataArray[i][6].c_str());
+	generator.status = atof(gendataArray[i][7].c_str());
+	generator.pmax = atof(gendataArray[i][8].c_str());
 
 	for (int j = 0; j < 96; j++)
 	{
-		if (i < 11) 
-		{
-			outPdPower[j] = atof(loadArray[2+j][2*i-4].c_str());
-			outQdPower[j] = atof(loadArray[2+j][2*i-3].c_str());
-		}
-		else 
-		{
-			//have the assuming data matching with load changes in a day
-			outPdPower[j] = 24*atof(loadArray[2+j][2*3-4].c_str())/atof(loadArray[2-1][2*3-4].c_str());
-			outQdPower[j] = 12*atof(loadArray[2+j][2*3-4].c_str())/atof(loadArray[2-1][2*3-4].c_str());
-		}
-		outPgPower[j] = 0;
-		outQgPower[j] = 0;
+		generator.pgPower[j] = generator.pgmax*atof(loadratioArray[j+1][0].c_str());
+		generator.qgPower[j] = generator.qgmax*atof(loadratioArray[j+1][0].c_str());
 	}
-	pDoc->m_Stations.AddStation(outBusName, outLongitude,outLatitude,outVolGrade, outBusNumber, outPdPower, outQdPower, outPgPower,outQgPower);
+	pDoc->m_Gens.push_back(generator);
 }
+/* end put gen data*/
 
-for (int i = 0; i<52; i++)
+/* put branch data*/
+BranchStruct branch;
+for (int i = 1; i < 161; i++)
 {
-	pDoc->branchArray[i][0] = atoi(branchnumArray[i][0].c_str());
-	pDoc->branchArray[i][1] = atoi(branchnumArray[i][1].c_str());
-
+	branch.fbus = atof(branchdataArray[i][0].c_str());
+	branch.tbus = atof(branchdataArray[i][1].c_str());
+	branch.br = atof(branchdataArray[i][2].c_str());
+	branch.bx = atof(branchdataArray[i][3].c_str());
+	branch.bb = atof(branchdataArray[i][4].c_str());
+	branch.ratea = atof(branchdataArray[i][5].c_str());
+	branch.rateb = atof(branchdataArray[i][6].c_str());
+	branch.ratec = atof(branchdataArray[i][7].c_str());
+	branch.ratio = atof(branchdataArray[i][8].c_str());
+	branch.angle = atof(branchdataArray[i][9].c_str());
+	branch.status = atof(branchdataArray[i][10].c_str());
+	branch.angmin = atof(branchdataArray[i][11].c_str());
+	branch.angmax = atof(branchdataArray[i][12].c_str());
+	branch.voltagegrade = atof(branchdataArray[i][13].c_str());
+	pDoc->m_Branchs.push_back(branch);
 }
+/* end put branch data*/
 /*end put data into doc*/
 
 /*start calculate in matlab
@@ -656,12 +714,12 @@ UpdateStations(40);
 CString strarray;
 
 
-StationStruct station;
-pDoc->m_Stations.GetStation(0,&station);
+//StationStruct station;
+//pDoc->m_Stations[0];
 
 #ifdef _DEBUG  //For demonstration purposes, lets add some objects to the map if we are running a debug build
   COSMCtrlMarker coWexfordMarker;
-  coWexfordMarker.m_Position = COSMCtrlPosition(station.pgPower[0], station.latitude);
+  coWexfordMarker.m_Position = COSMCtrlPosition(7.5, 12.5);
   coWexfordMarker.m_sToolTipText = strarray;
   coWexfordMarker.m_nIconIndex = m_nDefaultMarkerIconIndex;
   coWexfordMarker.m_nMinZoomLevel = 0;
@@ -1499,46 +1557,51 @@ void COSMCtrlAppView::OnDrawStation()
 //every time draw the visualization, circle R relates to pdpower
 void COSMCtrlAppView::UpdateStations(int timeNumber) 
 {
+	CString tooltips;
 	m_ctrlOSM.m_Markers.RemoveAll();
 	m_ctrlOSM.m_Polylines.RemoveAll();
 	m_ctrlOSM.m_Circles.RemoveAll();
 	pDoc = GetDocument();
-	int size = pDoc->m_Stations.GetStationCount(); // get size of array in doc
-	
+	int busSize = pDoc->m_Stations.size(); // get size of array in doc
+	int genSize = pDoc->m_Gens.size();
+	int branchSize = pDoc->m_Branchs.size();
+
 	/*draw circle for bus*/
-	for(int i = 0; i<size; i++) {
+	for(int i = 0; i<busSize; i++) {
 		StationStruct station;
-		pDoc->m_Stations.GetStation(i,&station);
-		COSMCtrlCircle sampleCircle;
+		station = pDoc->m_Stations[i];
+		if(station.kind == 1)
+			continue;
+		COSMCtrlCircle sampleCircle, sampleCircle2;
 		
 		sampleCircle.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
 		//sampleCircle.m_fRadius = (station.pdPower[timeNumber]*10);
-		sampleCircle.m_fRadius = 3*(10*station.pdPower[currentTimeInt]+station.pgPower[currentTimeInt]);
+		sampleCircle.m_fRadius = 300*(log(station.capacity+2));
 		sampleCircle.relatedBus = i;
 		if(station.volGrade == 220) 
 		{
 			#ifdef COSMCTRL_NOD2D
 			sampleCircle.m_colorBrush = Gdiplus::Color(0,0,128);
 			#else
-			sampleCircle.m_colorBrush = D2D1::ColorF(0,0,128);
+			sampleCircle.m_colorBrush = D2D1::ColorF(0,0,1);
 			#endif
 			sampleCircle.m_nMinZoomLevel = 0;
 		}
 		else if (station.volGrade == 110) 
 		{
 			#ifdef COSMCTRL_NOD2D
-			sampleCircle.m_colorBrush = Gdiplus::Color(0,255,255);
+			sampleCircle.m_colorBrush = Gdiplus::Color(200,0,0);
 			#else
-			sampleCircle.m_colorBrush = D2D1::ColorF(0,255,255);
+			sampleCircle.m_colorBrush = D2D1::ColorF(200,0,0);
 			#endif
 			sampleCircle.m_nMinZoomLevel = 0;
 		}
 		else if (station.volGrade == 35) 
 		{
 			#ifdef COSMCTRL_NOD2D
-			sampleCircle.m_colorBrush = Gdiplus::Color(128,128,0);
+			sampleCircle.m_colorBrush = Gdiplus::Color(200,128,0);
 			#else
-			sampleCircle.m_colorBrush = D2D1::ColorF(128,128,0);
+			sampleCircle.m_colorBrush = D2D1::ColorF(200,128,0);
 			#endif
 			sampleCircle.m_nMinZoomLevel = 11;
 		}
@@ -1546,17 +1609,64 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 		sampleCircle.m_DashStyle = Gdiplus::DashStyleDashDot;
 		sampleCircle.m_colorPen = Gdiplus::Color(255,69,0);
 		#else
-		sampleCircle.m_DashStyle = D2D1_DASH_STYLE_DASH_DOT;
-		sampleCircle.m_colorPen = D2D1::ColorF(255,69,0);
+		sampleCircle.m_DashStyle = D2D1_DASH_STYLE_DOT;
+		sampleCircle.m_colorPen = D2D1::ColorF(0,0,0);
 		#endif
 		sampleCircle.m_fLinePenWidth = 2;
 		sampleCircle.m_nMaxZoomLevel = 18;
-		CString tooltips;
-		tooltips.Format(_T("%d"), station.busNumber);
+		//CString tooltips;
+		//tooltips.Format(_T("%d"), station.busNumber);
 		sampleCircle.m_sToolTipText = station.busName;
 		sampleCircle.m_bDraggable = FALSE; //Allow the circle to be draggable
 		sampleCircle.m_bEditable = TRUE; //Allow the circle to be editable
 		m_ctrlOSM.m_Circles.Add(sampleCircle);
+
+		sampleCircle2.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
+		//sampleCircle2.m_fRadius = (station.pdPower[timeNumber]*10);
+		sampleCircle2.m_fRadius = 300*(log(station.load[currentTimeInt]+2));
+		sampleCircle2.relatedBus = i;
+		if(station.volGrade == 220) 
+		{
+			#ifdef COSMCTRL_NOD2D
+			sampleCircle2.m_colorBrush = Gdiplus::Color(0,0,220);
+			#else
+			sampleCircle2.m_colorBrush = D2D1::ColorF(0,0,220);
+			#endif
+			sampleCircle2.m_nMinZoomLevel = 0;
+		}
+		else if (station.volGrade == 110) 
+		{
+			#ifdef COSMCTRL_NOD2D
+			sampleCircle2.m_colorBrush = Gdiplus::Color(230,0,0);
+			#else
+			sampleCircle2.m_colorBrush = D2D1::ColorF(230,0,0);
+			#endif
+			sampleCircle2.m_nMinZoomLevel = 0;
+		}
+		else if (station.volGrade == 35) 
+		{
+			#ifdef COSMCTRL_NOD2D
+			sampleCircle2.m_colorBrush = Gdiplus::Color(230,128,0);
+			#else
+			sampleCircle2.m_colorBrush = D2D1::ColorF(230,128,0);
+			#endif
+			sampleCircle2.m_nMinZoomLevel = 11;
+		}
+		#ifdef COSMCTRL_NOD2D
+		sampleCircle2.m_DashStyle = Gdiplus::DashStyleDashDot;
+		sampleCircle2.m_colorPen = Gdiplus::Color(255,69,0);
+		#else
+		sampleCircle2.m_DashStyle = D2D1_DASH_STYLE_DASH;
+		sampleCircle2.m_colorPen = D2D1::ColorF(255,255,255);
+		#endif
+		sampleCircle2.m_fLinePenWidth = 2;
+		sampleCircle2.m_nMaxZoomLevel = 18;
+		//CString tooltips;
+		//tooltips.Format(_T("%d"), station.busNumber);
+		sampleCircle2.m_sToolTipText = station.busName;
+		sampleCircle2.m_bDraggable = FALSE; //Allow the circle to be draggable
+		sampleCircle2.m_bEditable = TRUE; //Allow the circle to be editable
+		m_ctrlOSM.m_Circles.Add(sampleCircle2);
 	
 	}
 	/*end draw circle for bus*/
@@ -1564,39 +1674,86 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 	m_ctrlOSM.m_Circles.GetAt(selectedNum).m_bSelected = TRUE;
 
 	/*begin draw line for branch*/
-	for (int i = 0; i<52; i++) 
+	double busBranchArray[35][35];
+	for(int i =0;i<35;i++)
+		for (int j=0;j<35;j++)
+			busBranchArray[i][j] = 0;
+	for (int i = 0; i < branchSize; i++) 
 	{
+		BranchStruct branch;
+		branch = pDoc->m_Branchs[i];
 		int startBus, endBus;
-		startBus = pDoc->branchArray[i][0];
-		endBus = pDoc->branchArray[i][1];
-
+		startBus = FindBusNumByI(branch.fbus, pDoc->m_Stations);
+		endBus = FindBusNumByI(branch.tbus, pDoc->m_Stations);
 		StationStruct station1;
 		StationStruct station2;
-		pDoc->m_Stations.GetStation(startBus-1,&station1);
-		pDoc->m_Stations.GetStation(endBus-1,&station2);
-
-		COSMCtrlPolyline samplePolyline;
-		COSMCtrlNode tempPosition(station1.longitude, station1.latitude);
-		samplePolyline.m_Nodes.Add(tempPosition);
-		tempPosition = COSMCtrlNode(station2.longitude, station2.latitude);
-		samplePolyline.m_Nodes.Add(tempPosition);
-		samplePolyline.m_fDashOffset = 3;
-		if (startBus > 11 || endBus > 11) {
-			samplePolyline.m_nMinZoomLevel = 11;
-			samplePolyline.m_nMaxZoomLevel = 18;
-		}
-		else 
+		station1 = pDoc->m_Stations[startBus];
+		station2 = pDoc->m_Stations[endBus];
+		//pDoc->m_Stations.GetStation(startBus-1,&station1);
+		//pDoc->m_Stations.GetStation(endBus-1,&station2);
+		if(busBranchArray[startBus][endBus] == 0 && startBus!=endBus)
 		{
-			samplePolyline.m_nMinZoomLevel = 0;
-			samplePolyline.m_nMaxZoomLevel = 18;
+			COSMCtrlPolyline samplePolyline;
+			COSMCtrlNode tempPosition(station1.longitude, station1.latitude);
+			samplePolyline.m_Nodes.Add(tempPosition);
+			tempPosition = COSMCtrlNode(station2.longitude, station2.latitude);
+			samplePolyline.m_Nodes.Add(tempPosition);
+			samplePolyline.m_fDashOffset = 3;
+
+			samplePolyline.relatedBranch =i;
+
+			if (startBus > 10 || endBus > 10) {
+				samplePolyline.m_nMinZoomLevel = 11;
+				samplePolyline.m_nMaxZoomLevel = 18;
+			}
+			else 
+			{
+				samplePolyline.m_nMinZoomLevel = 0;
+				samplePolyline.m_nMaxZoomLevel = 18;
+			}
+			samplePolyline.m_sToolTipText = _T("A simple Polyline example for COSMCtrl");
+			samplePolyline.m_bDraggable = FALSE; //Allow the polyline to be draggable
+			samplePolyline.m_bEditable = TRUE; //Allow the polyline to be edited
+			samplePolyline.m_fLinePenWidth = 1;
+			if (branch.voltagegrade == 220)
+				samplePolyline.m_colorPen = RGB(0, 0, 128);
+			else if (branch.voltagegrade == 110)
+				samplePolyline.m_colorPen = RGB(128, 0, 0);
+			else if (branch.voltagegrade == 35)
+				samplePolyline.m_colorPen = RGB(200, 128, 0);
+
+			m_ctrlOSM.m_Polylines.Add(samplePolyline);
 		}
-		samplePolyline.m_sToolTipText = _T("A simple Polyline example for COSMCtrl");
-		samplePolyline.m_bDraggable = FALSE; //Allow the polyline to be draggable
-		samplePolyline.m_bEditable = TRUE; //Allow the polyline to be edited
-		samplePolyline.m_fLinePenWidth = 1;
-		m_ctrlOSM.m_Polylines.Add(samplePolyline);
+		busBranchArray[startBus][endBus] += 1;
 	}
 	/*end draw line for branch*/
+
+	/*draw marker for vehicle
+	COSMCtrlMarker eVMarker;
+	eVMarker.m_Position = COSMCtrlPosition(pDoc->Vehicle.longitude,pDoc->Vehicle.latitude);
+	eVMarker.m_sToolTipText = pDoc->Vehicle.busName;
+	eVMarker.m_nIconIndex = m_nDefaultMarkerIconIndex;
+	eVMarker.m_nMinZoomLevel =11;
+	eVMarker.m_nMaxZoomLevel = 18;
+	eVMarker.m_bDraggable = TRUE; //Allow the marker to be draggable
+	m_ctrlOSM.m_Markers.Add(eVMarker);
+
+	COSMCtrlPolyline eBLine;
+	COSMCtrlNode tempPosition (pDoc->Vehicle.longitude, pDoc->Vehicle.latitude);
+	eBLine.m_Nodes.Add(tempPosition);
+	tempPosition = COSMCtrlNode(pDoc->m_Stations[15].longitude, pDoc->m_Stations[15].latitude);
+	eBLine.m_Nodes.Add(tempPosition);
+	eBLine.m_fDashOffset = 3;
+	
+	eBLine.m_nMinZoomLevel = 11;
+	eBLine.m_nMaxZoomLevel = 18;
+	eBLine.m_sToolTipText = _T("Line");
+	eBLine.m_bDraggable = FALSE; //Allow the polyline to be draggable
+	eBLine.m_bEditable = TRUE; //Allow the polyline to be edited
+	eBLine.m_fLinePenWidth = 1;
+	m_ctrlOSM.m_Polylines.Add(eBLine);
+
+	end draw marker for vehicle*/
 }
 
 void COSMCtrlAppView::OnZoomSp() 
@@ -2637,49 +2794,99 @@ void COSMCtrlAppView::OnHelpCalculate()
 {
 	/*start calculate in matlab*/
 	pDoc = GetDocument();
-	int busSize = pDoc->m_Stations.GetStationCount();
-	double busAddArray[988]; 
-	double genAddArray[42];
+	int busSize = pDoc->m_Stations.size();
+	int genSize = pDoc->m_Gens.size();
+	int branchSize = pDoc->m_Branchs.size();
+	double busArray[988]; 
+	double genArray[42];
+	double branchArray[2080];
 	double outBusArray[988];
+	double outGenArray[42];
+	double outBranchArray[2080];
 	mclmcrInitialize();
-	libfinalflowInitialize();
+	libgodflowInitialize();
 	mwArray in1(76, 13, mxDOUBLE_CLASS, mxREAL);
 	mwArray in2(2, 21, mxDOUBLE_CLASS, mxREAL);
+	mwArray in3(160, 13, mxDOUBLE_CLASS, mxREAL);
+
 	for (int i=0;i<96;i++)
 	{
 		//memset(busAddArray, 0, 988);
 		//memset(genAddArray, 0, 42);
 		for(int j =0;j<988;j++)
-			busAddArray[j]=0;
+			busArray[j]=0;
 		for(int j =0;j<42;j++)
-			genAddArray[j]=0;
+			genArray[j]=0;
+		for(int j =0;j<2080;j++)
+			branchArray[j]=0;
 		
-		for (int j=2;j<10;j++)
+		for (int j=0;j<busSize;j++)
 		{
 			StationStruct station;
-			pDoc->m_Stations.GetStation(j,&station);
-			busAddArray[2*76+j] = station.pdPower[i];
-			busAddArray[3*76+j] = station.qdPower[i];
+			station = pDoc->m_Stations[j];
+			busArray[0*76+j] = station.bus_i;
+			busArray[1*76+j] = station.type;
+			busArray[2*76+j] = station.pdPower[i];
+			busArray[3*76+j] = station.qdPower[i];
+			busArray[4*76+j] = station.gs;
+			busArray[5*76+j] = station.bs;
+			busArray[6*76+j] = station.area;
+			busArray[7*76+j] = station.voltageM[i];
+			busArray[8*76+j] = station.voltageA[i];
+			busArray[9*76+j] = station.baseKv;
+			busArray[10*76+j] = station.zone;
+			busArray[11*76+j] = station.vmax;
+			busArray[12*76+j] = station.vmin;
 		}
-		for (int j=0;j<2;j++)
+		for (int j=0;j<genSize;j++)
 		{
-			StationStruct station;
-			pDoc->m_Stations.GetStation(j,&station);
-			genAddArray[1*2+j] = station.pgPower[i];
-			genAddArray[2*2+j] = station.qgPower[i];
+			GenStruct generator;
+			//pDoc->m_Stations.GetStation(j,&station);
+			generator = pDoc->m_Gens[j];
+			genArray[0*2+j] = generator.bus_i;
+			genArray[1*2+j] = generator.pgPower[i];
+			genArray[2*2+j] = generator.qgPower[i];
+			genArray[3*2+j] = generator.qmax;
+			genArray[4*2+j] = generator.qmin;
+			genArray[5*2+j] = generator.vg;
+			genArray[6*2+j] = generator.mbase;
+			genArray[7*2+j] = generator.status;
+			genArray[8*2+j] = generator.pmax;
+
+		}
+
+		for (int j=0;j<branchSize;j++)
+		{
+			BranchStruct branch;
+			//pDoc->m_Stations.GetStation(j,&station);
+			branch = pDoc->m_Branchs[j];
+			branchArray[0*160+j] = branch.fbus;
+			branchArray[1*160+j] = branch.tbus;
+			branchArray[2*160+j] = branch.br;
+			branchArray[3*160+j] = branch.bx;
+			branchArray[4*160+j] = branch.bb;
+			branchArray[5*160+j] = branch.ratea;
+			branchArray[6*160+j] = branch.rateb;
+			branchArray[7*160+j] = branch.ratec;
+			branchArray[8*160+j] = branch.ratio;
+			branchArray[9*160+j] = branch.angle;
+			branchArray[10*160+j] = branch.status;
+			branchArray[11*160+j] = branch.angmin;
+			branchArray[12*160+j] = branch.angmax;
+
 		}
 			
 		// Create input data
 
-		in1.SetData(busAddArray, 988);
-		in2.SetData(genAddArray, 42);
-            
+		in1.SetData(busArray, 988);
+		in2.SetData(genArray, 42);
+        in3.SetData(branchArray, 2080);
 		// Create output array
-		mwArray out;
+		mwArray out1, out2, out3;
             
 		// Call the library function
 		try{
-			Newflow(1, out, in1, in2);
+			Newflow(3, out1, out2, out3, in1, in2,in3);
 		}
 		catch (const mwException& erro)
 		{
@@ -2689,24 +2896,39 @@ void COSMCtrlAppView::OnHelpCalculate()
 		}
 
 		//put result into doc
-		out.GetData(outBusArray,988);
+		out1.GetData(outBusArray,988);
+		out2.GetData(outGenArray, 42);
+		out3.GetData(outBranchArray, 2080);
 		//StationStruct *station = new StationStruct;
+		
 		for(int j=0;j<busSize;j++)
 		{
-			StationStruct *station = new StationStruct;
-			pDoc->m_Stations.GetStation(j, station);
+			//StationStruct *station = new StationStruct;
+			//pDoc->m_Stations.GetStation(j, station);
 			//station->voltageM[i] = 10.1;
-			station->voltageM[i] = outBusArray[7*76+j];
-			station->voltageA[i] = outBusArray[8*76+j];
-			pDoc->m_Stations.m_stationArray.RemoveAt(j);
-			pDoc->m_Stations.m_stationArray.InsertAt(j, station);
-			
+			pDoc->m_Stations[j].voltageM[i] = outBusArray[7*76+j];
+			pDoc->m_Stations[j].voltageA[i] = outBusArray[8*76+j];
+			//pDoc->m_Stations.m_stationArray.RemoveAt(j);
+			//pDoc->m_Stations.m_stationArray.InsertAt(j, station);
+		}
+		for(int j=0;j<genSize;j++)
+		{
+			pDoc->m_Gens[j].pgPower[i] = outGenArray[1*2+j];
+			pDoc->m_Gens[j].qgPower[i] = outGenArray[2*2+j];
+		
+		}
+		for(int j=0;j<branchSize;j++)
+		{
+			pDoc->m_Branchs[j].fromP[i] = outBranchArray[13*160+j];
+			pDoc->m_Branchs[j].fromQ[i] = outBranchArray[14*160+j];
+			pDoc->m_Branchs[j].toP[i] = outBranchArray[15*160+j];
+			pDoc->m_Branchs[j].toQ[i] = outBranchArray[16*160+j];
 		}
 		UpdateStations(40);
 		// Call the application and library termination routine
 
 	}
-	libfinalflowTerminate();
+	libgodflowTerminate();
 	mclTerminateApplication();
 	/*end calculate in matlab*/
 }
@@ -2714,73 +2936,10 @@ void COSMCtrlAppView::OnHelpCalculate()
 //update only the stations
 void COSMCtrlAppView::OnAppConfm()
 {
-	m_ctrlOSM.m_Markers.RemoveAll();
-	m_ctrlOSM.m_Polylines.RemoveAll();
-	m_ctrlOSM.m_Circles.RemoveAll();
-	pDoc = GetDocument();
-	int size = pDoc->m_Stations.GetStationCount(); // get size of array in doc
 	
-	/*draw circle for bus*/
-	for(int i = 0; i<size; i++) {
-		StationStruct station;
-		pDoc->m_Stations.GetStation(i,&station);
-		COSMCtrlCircle sampleCircle;
-		
-		sampleCircle.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
-		//sampleCircle.m_fRadius = (station.pdPower[timeNumber]*10);
-		sampleCircle.m_fRadius = 3*(10*station.pdPower[currentTimeInt]+station.pgPower[currentTimeInt]);
-		sampleCircle.relatedBus = i;
-		if(station.volGrade == 220) 
-		{
-			#ifdef COSMCTRL_NOD2D
-			sampleCircle.m_colorBrush = Gdiplus::Color(0,0,128);
-			#else
-			sampleCircle.m_colorBrush = D2D1::ColorF(0,0,128);
-			#endif
-			sampleCircle.m_nMinZoomLevel = 0;
-		}
-		else if (station.volGrade == 110) 
-		{
-			#ifdef COSMCTRL_NOD2D
-			sampleCircle.m_colorBrush = Gdiplus::Color(0,255,255);
-			#else
-			sampleCircle.m_colorBrush = D2D1::ColorF(0,255,255);
-			#endif
-			sampleCircle.m_nMinZoomLevel = 0;
-		}
-		else if (station.volGrade == 35) 
-		{
-			#ifdef COSMCTRL_NOD2D
-			sampleCircle.m_colorBrush = Gdiplus::Color(128,128,0);
-			#else
-			sampleCircle.m_colorBrush = D2D1::ColorF(128,128,0);
-			#endif
-			sampleCircle.m_nMinZoomLevel = 11;
-		}
-		#ifdef COSMCTRL_NOD2D
-		sampleCircle.m_DashStyle = Gdiplus::DashStyleDashDot;
-		sampleCircle.m_colorPen = Gdiplus::Color(255,69,0);
-		#else
-		sampleCircle.m_DashStyle = D2D1_DASH_STYLE_DASH_DOT;
-		sampleCircle.m_colorPen = D2D1::ColorF(255,69,0);
-		#endif
-		sampleCircle.m_fLinePenWidth = 2;
-		sampleCircle.m_nMaxZoomLevel = 18;
-		CString tooltips;
-		tooltips.Format(_T("%d"), station.busNumber);
-		sampleCircle.m_sToolTipText = station.busName;
-		sampleCircle.m_bDraggable = FALSE; //Allow the circle to be draggable
-		sampleCircle.m_bEditable = TRUE; //Allow the circle to be editable
-		m_ctrlOSM.m_Circles.Add(sampleCircle);
 	
-	}
-	/*end draw circle for bus*/
-
-	m_ctrlOSM.m_Circles.GetAt(selectedNum).m_bSelected = TRUE;
-
-	//let stations update
-	OnSwitchMarker();
-	OnSwitchNormal();
+	
+	
 }
 
 void COSMCtrlAppView::OnLButtonUp(UINT nFlags, CPoint point)
@@ -2812,13 +2971,32 @@ void COSMCtrlAppView::DblClickUpdate()
 {
 	pDoc = GetDocument();
 	COSMCtrlCircle circleOnDraw;
+	COSMCtrlMarker markerOnDraw;
 	int circleSize = m_ctrlOSM.m_Circles.GetSize();
+	int markerSize = m_ctrlOSM.m_Markers.GetSize();
 	CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
 	CFormCommandView* pView = (CFormCommandView*)pFrame->pLeftView;
 	CInfoView *pIView = (CInfoView*)pFrame->pInfoView;
-	double xTime[96];
+	double xTime[96], zeroArray[96];
 	for (int i=0;i<96;i++)
+	{
 		xTime[i]=i;
+		zeroArray[i] = 0;
+	}
+	/*
+	for(int i = 0; i<markerSize;i++)
+	{
+		markerOnDraw = m_ctrlOSM.m_Markers.ElementAt(i);
+		if (markerOnDraw.m_bSelected==TRUE)
+		{
+			CEdit *pBoxOne;
+			pBoxOne = (CEdit*) pIView->GetDlgItem(IDC_EDIT1);
+			pBoxOne->SetWindowTextW(pDoc->Vehicle.busName);
+			pView->UpdateLineGraphS(xTime,zeroArray, pDoc->Vehicle.loadP,pDoc->Vehicle.pdPower,96);
+		}
+	}
+	*/
+
 	for(int i = 0; i<circleSize;i++)
 	{
 		circleOnDraw = m_ctrlOSM.m_Circles.ElementAt(i);
@@ -2834,7 +3012,7 @@ void COSMCtrlAppView::DblClickUpdate()
 			pBoxFour = (CEdit*) pIView->GetDlgItem(IDC_EDIT4);
 			StationStruct station;
 			int testIntaa = circleOnDraw.relatedBus;
-			pDoc->m_Stations.GetStation(circleOnDraw.relatedBus,&station);
+			station = pDoc->m_Stations[circleOnDraw.relatedBus];
 			
 			CString editBusVoltageG,editBusVoltageM,editBusVoltageA;
 
@@ -2846,6 +3024,20 @@ void COSMCtrlAppView::DblClickUpdate()
 			pBoxThree->SetWindowTextW(editBusVoltageM);
 			pBoxFour->SetWindowTextW(editBusVoltageA);
 
+			/*
+			if(selectedNum == 15)
+			{
+				double beforeAdjust[96], afterAdkust[96];
+				for(int j = 0; j<96; j++)
+				{
+					beforeAdjust[j] = station.loadP[j]+pDoc->Vehicle.loadP[j];
+					afterAdkust[j] = station.loadP[j]+pDoc->Vehicle.pdPower[j];
+				}
+				pView->UpdateLineGraphS(xTime,station.loadP, beforeAdjust,afterAdkust,96);
+			}
+			else 
+				pView->UpdateLineGraph(xTime,station.loadP, 96);
+				*/
 			pView->UpdateLineGraph(xTime,station.pdPower, 96);
 			break;
 		}
@@ -2853,5 +3045,28 @@ void COSMCtrlAppView::DblClickUpdate()
 		
 
 	}
+}
+
+int COSMCtrlAppView::FindBusNumByI(double bus_i, std::vector<StationStruct> m_Stations)
+{
+	double fatherNum;
+	int busNum;
+	for (int i =0; i<m_Stations.size();i++)
+	{
+		if(m_Stations[i].bus_i == bus_i)
+		{
+			fatherNum = m_Stations[i].father;
+			for (int j =0; j<m_Stations.size();j++)
+			{
+				if(m_Stations[j].bus_i == fatherNum)
+				{
+					busNum =j;
+					break;
+				}
+			}
+			break;
+		}
+	}
+	return busNum;
 }
 

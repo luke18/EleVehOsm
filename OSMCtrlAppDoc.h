@@ -1,5 +1,7 @@
 #pragma once
 #include "OSMCtrlStation.h"
+#include <vector>
+#include <string>
 
 class COSMCtrlAppDoc : public CDocument
 {
@@ -9,8 +11,14 @@ protected: // create from serialization only
 
 // Attributes
 public:
-	COSMCtrlStation m_Stations;
-	int branchArray[52][2];
+	//COSMCtrlStation m_Stations;
+	std::vector<StationStruct> m_Stations;
+	std::vector<GenStruct> m_Gens;
+	std::vector<BranchStruct> m_Branchs;
+
+	
+	//StationStruct Vehicle;
+	//int branchArray[52][2];
 
 // Operations
 public:

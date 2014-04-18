@@ -39,8 +39,8 @@ void COSMCtrlAppDoc::Serialize(CArchive& ar)
 	//{
 	//	 //TODO: add loading code here
 	//}
-	m_Stations.Serialize(ar);
-	UpdateAllViews(NULL);
+	//m_Stations.Serialize(ar);
+	//UpdateAllViews(NULL);
 }
 
 #ifdef _DEBUG

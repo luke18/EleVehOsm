@@ -31,6 +31,7 @@ to maintain a single distribution point for the source code.
 
 COSMCtrlPolyline::COSMCtrlPolyline() : m_fLinePenWidth(2),
                                        m_fNodeWidth(4),
+									   relatedBranch(-1),
                                        m_colorNode(0, 0, 0),
                                        m_fSelectionNodeWidth(4),
                                        m_colorSelectionNode(255, 0, 0),

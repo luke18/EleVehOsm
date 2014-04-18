@@ -8510,7 +8510,7 @@ BOOL COSMCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
             newCenterPosition.m_fLatitude = COSMCtrlHelper::TileY2Latitude(fY, nZoom);
             newCenterPosition.m_fLongitude = COSMCtrlHelper::TileX2Longitude(fX, nZoom);
             
-            SetCenterAndZoom(newCenterPosition, fZoom, TRUE);
+            SetCenterAndZoom(newCenterPosition, fZoom, FALSE);
           }
         }
       }
