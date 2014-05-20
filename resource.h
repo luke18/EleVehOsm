@@ -82,6 +82,9 @@
 #define IDC_STATIC_HEADLINE             1035
 #define IDC_EDIT3                       1036
 #define IDC_EDIT4                       1037
+
+#define IDC_BUTTON1                     1038
+#define IDC_BUTTON2                     1039
 #define ID_ZOOM_0                       32772
 #define ID_ZOOM_1                       32773
 #define ID_ZOOM_2                       32774
@@ -156,7 +159,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        139
 #define _APS_NEXT_COMMAND_VALUE         32856
-#define _APS_NEXT_CONTROL_VALUE         1038
+#define _APS_NEXT_CONTROL_VALUE         1040
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -30,6 +30,7 @@ to maintain a single distribution point for the source code.
 
 
 COSMCtrlPolyline::COSMCtrlPolyline() : m_fLinePenWidth(2),
+									   m_bSelected(FALSE),
                                        m_fNodeWidth(4),
 									   relatedBranch(-1),
                                        m_colorNode(0, 0, 0),
@@ -76,7 +77,9 @@ COSMCtrlPolyline& COSMCtrlPolyline::operator=(const COSMCtrlPolyline& polyline)
 {
   m_Nodes.Copy(polyline.m_Nodes);
   m_fLinePenWidth       = polyline.m_fLinePenWidth;
+  relatedBranch			= polyline.relatedBranch;
   m_colorPen            = polyline.m_colorPen;
+  m_bSelected			= polyline.m_bSelected;
   m_colorNode           = polyline.m_colorNode;
   m_colorSelectionNode  = polyline.m_colorSelectionNode;
   m_DashCap             = polyline.m_DashCap;
@@ -131,6 +134,7 @@ void COSMCtrlPolyline::Select()
   //Mark all nodes as selected  
   for (INT_PTR i=0; i<m_Nodes.GetSize(); i++)
     m_Nodes.ElementAt(i).m_bSelected = TRUE;
+   m_bSelected = TRUE;
 }
 
 void COSMCtrlPolyline::Deselect()
@@ -138,6 +142,7 @@ void COSMCtrlPolyline::Deselect()
   //Mark all nodes as selected  
   for (INT_PTR i=0; i<m_Nodes.GetSize(); i++)
     m_Nodes.ElementAt(i).m_bSelected = FALSE;
+  m_bSelected = FALSE;
 }
 
 double COSMCtrlPolyline::Length() const

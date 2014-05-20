@@ -15,6 +15,7 @@ public:
 	std::vector<StationStruct> m_Stations;
 	std::vector<GenStruct> m_Gens;
 	std::vector<BranchStruct> m_Branchs;
+	std::vector<ElecStruct> m_Elecs;
 
 	
 	//StationStruct Vehicle;

@@ -26,8 +26,16 @@ struct BranchStruct
 	double fbus,tbus,br,bx,bb,ratea,rateb,ratec,ratio,angle,status,angmin,angmax,voltagegrade;
 	double fromP[96], toP[96], fromQ[96], toQ[96];
 	int startBus, endBus; //on the simple map
+	double capacity;
 };
 
+struct ElecStruct 
+{
+	CString busName;
+	double longitude;
+	double latitude;
+	double loadBefore[96], loadAfter[96];
+};
 /*
 int FindBusNumByI(double bus_i, std::vector<StationStruct> m_Stations)
 {

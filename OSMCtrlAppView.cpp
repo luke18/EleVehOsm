@@ -542,6 +542,23 @@ while ( getline(in3,line) ) {  // get next line in file
 }
 /*end read in loadratio*/
 
+/*read in elecdata*/
+ifstream in4("elecdata.csv");
+vector< vector<string> > elecdataArray;  // the 2D array
+//vector<string> v;                // array of values for one line only
+
+while ( getline(in4,line) ) {  // get next line in file
+	v.clear();
+	stringstream ss(line);
+
+	while (getline(ss,field,',')) { // break line into comma delimitted fields
+		v.push_back(field);  // add each field to the 1D array
+	}
+
+	elecdataArray.push_back(v);  // add the 1D array to the 2D array
+}
+/*end read in loadratio*/
+
 /*put data into doc*/
 
 COSMCtrlAppDoc*pDoc = GetDocument();
@@ -617,6 +634,20 @@ for (int i = 1; i < 3; i++)
 }
 /* end put gen data*/
 
+/*put elec data*/
+ElecStruct elec;
+elec.busName = busdataArray[77][0].c_str();
+elec.longitude =  atof(busdataArray[77][1].c_str());
+elec.latitude = atof(busdataArray[77][2].c_str());
+for (int j = 0; j < 96; j++)
+{
+	elec.loadBefore[j] = atof(elecdataArray[j+1][0].c_str());
+	elec.loadAfter[j] = atof(elecdataArray[j+1][1].c_str());
+}
+pDoc->m_Elecs.push_back(elec);
+
+/*end put elec data*/
+
 /* put branch data*/
 BranchStruct branch;
 for (int i = 1; i < 161; i++)
@@ -635,6 +666,7 @@ for (int i = 1; i < 161; i++)
 	branch.angmin = atof(branchdataArray[i][11].c_str());
 	branch.angmax = atof(branchdataArray[i][12].c_str());
 	branch.voltagegrade = atof(branchdataArray[i][13].c_str());
+	branch.capacity = atof(branchdataArray[i][14].c_str());
 	branch.startBus = FindBusNumByI(branch.fbus, pDoc->m_Stations);
 	branch.endBus = FindBusNumByI(branch.tbus, pDoc->m_Stations);
 
@@ -719,9 +751,22 @@ for (int i=0;i<96;i++)
 	//mclTerminateApplication();
 }
 end calculate in matlab*/
+for(int i =0;i<35;i++)
+	for (int j=0;j<35;j++)
+		busBranchRef[i][j] = 0;
+for(int i = 0; i < pDoc->m_Branchs.size();i++)
+	busBranchRef[pDoc->m_Branchs[i].startBus][pDoc->m_Branchs[i].endBus] += 1;
 currentTimeInt = 10;
 selectedNum = 3;
+//mwArray input1(76, 13, mxDOUBLE_CLASS, mxREAL);
+//mwArray input2(2, 21, mxDOUBLE_CLASS, mxREAL);
+//mwArray input3(160, 13, mxDOUBLE_CLASS, mxREAL);
+
+
+
 UpdateStations(40);
+
+
 CString strarray;
 
 
@@ -1572,10 +1617,12 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 	m_ctrlOSM.m_Markers.RemoveAll();
 	m_ctrlOSM.m_Polylines.RemoveAll();
 	m_ctrlOSM.m_Circles.RemoveAll();
+	m_ctrlOSM.m_Polygons.RemoveAll();
 	pDoc = GetDocument();
 	int busSize = pDoc->m_Stations.size(); // get size of array in doc
 	int genSize = pDoc->m_Gens.size();
 	int branchSize = pDoc->m_Branchs.size();
+	BranchStruct branch;
 
 	/*draw circle for bus*/
 	for(int i = 0; i<busSize; i++) {
@@ -1594,7 +1641,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 			#ifdef COSMCTRL_NOD2D
 			sampleCircle.m_colorBrush = Gdiplus::Color(0,0,128);
 			#else
-			sampleCircle.m_colorBrush = D2D1::ColorF(0,0,1);
+			sampleCircle.m_colorBrush = D2D1::ColorF(0,0,1,50);
 			#endif
 			sampleCircle.m_nMinZoomLevel = 0;
 		}
@@ -1603,7 +1650,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 			#ifdef COSMCTRL_NOD2D
 			sampleCircle.m_colorBrush = Gdiplus::Color(200,0,0);
 			#else
-			sampleCircle.m_colorBrush = D2D1::ColorF(200,0,0);
+			sampleCircle.m_colorBrush = D2D1::ColorF(200,0,0,50);
 			#endif
 			sampleCircle.m_nMinZoomLevel = 0;
 		}
@@ -1612,7 +1659,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 			#ifdef COSMCTRL_NOD2D
 			sampleCircle.m_colorBrush = Gdiplus::Color(200,128,0);
 			#else
-			sampleCircle.m_colorBrush = D2D1::ColorF(200,128,0);
+			sampleCircle.m_colorBrush = D2D1::ColorF(200,128,0,50);
 			#endif
 			sampleCircle.m_nMinZoomLevel = 11;
 		}
@@ -1620,7 +1667,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 		sampleCircle.m_DashStyle = Gdiplus::DashStyleDashDot;
 		sampleCircle.m_colorPen = Gdiplus::Color(255,69,0);
 		#else
-		sampleCircle.m_DashStyle = D2D1_DASH_STYLE_DOT;
+		sampleCircle.m_DashStyle = D2D1_DASH_STYLE_DASH;
 		sampleCircle.m_colorPen = D2D1::ColorF(0,0,0);
 		#endif
 		sampleCircle.m_fLinePenWidth = 2;
@@ -1631,18 +1678,19 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 		sampleCircle.m_bDraggable = FALSE; //Allow the circle to be draggable
 		sampleCircle.m_bEditable = TRUE; //Allow the circle to be editable
 		m_ctrlOSM.m_Circles.Add(sampleCircle);
-
+	/*end capacity circle*/
 		sampleCircle2.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
 		//sampleCircle2.m_fRadius = (station.pdPower[timeNumber]*10);
 		double tmpladoddddd = station.loadP[currentTimeInt];
 		sampleCircle2.m_fRadius = 300*(log(station.loadP[currentTimeInt]+2));
 		sampleCircle2.relatedBus = i;
+
 		if(station.volGrade == 220) 
 		{
 			#ifdef COSMCTRL_NOD2D
 			sampleCircle2.m_colorBrush = Gdiplus::Color(0,0,220);
 			#else
-			sampleCircle2.m_colorBrush = D2D1::ColorF(0,0,220);
+			sampleCircle2.m_colorBrush = D2D1::ColorF(0,0,220,64);
 			#endif
 			sampleCircle2.m_nMinZoomLevel = 0;
 		}
@@ -1651,7 +1699,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 			#ifdef COSMCTRL_NOD2D
 			sampleCircle2.m_colorBrush = Gdiplus::Color(230,0,0);
 			#else
-			sampleCircle2.m_colorBrush = D2D1::ColorF(230,0,0);
+			sampleCircle2.m_colorBrush = D2D1::ColorF(230,0,0,64);
 			#endif
 			sampleCircle2.m_nMinZoomLevel = 0;
 		}
@@ -1660,7 +1708,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 			#ifdef COSMCTRL_NOD2D
 			sampleCircle2.m_colorBrush = Gdiplus::Color(230,128,0);
 			#else
-			sampleCircle2.m_colorBrush = D2D1::ColorF(230,128,0);
+			sampleCircle2.m_colorBrush = D2D1::ColorF(230,128,0,64);
 			#endif
 			sampleCircle2.m_nMinZoomLevel = 11;
 		}
@@ -1672,6 +1720,12 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 		sampleCircle2.m_colorPen = D2D1::ColorF(255,255,255);
 		#endif
 		sampleCircle2.m_fLinePenWidth = 2;
+		if (station.loadP[currentTimeInt] > station.capacity)
+		{
+			sampleCircle2.m_DashStyle = D2D1_DASH_STYLE_DASH;
+			sampleCircle2.m_colorPen = D2D1::ColorF(255,0,0);
+			sampleCircle2.m_fLinePenWidth = 5;
+		}
 		sampleCircle2.m_nMaxZoomLevel = 18;
 		//CString tooltips;
 		//tooltips.Format(_T("%d"), station.busNumber);
@@ -1679,7 +1733,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 		sampleCircle2.m_bDraggable = FALSE; //Allow the circle to be draggable
 		sampleCircle2.m_bEditable = TRUE; //Allow the circle to be editable
 		m_ctrlOSM.m_Circles.Add(sampleCircle2);
-	
+	/*end real power circle*/
 	}
 	/*end draw circle for bus*/
 
@@ -1691,7 +1745,6 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 			busBranchArray[i][j] = 0;
 	for (int i = 0; i < branchSize; i++) 
 	{
-		BranchStruct branch;
 		branch = pDoc->m_Branchs[i];
 		//int startBus, endBus;
 		//branch.startBus = FindBusNumByI(branch.fbus, pDoc->m_Stations);
@@ -1722,10 +1775,10 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 				samplePolyline.m_nMinZoomLevel = 0;
 				samplePolyline.m_nMaxZoomLevel = 18;
 			}
-			samplePolyline.m_sToolTipText = _T("A simple Polyline example for COSMCtrl");
+			samplePolyline.m_sToolTipText.Format( _T("From: %d, To: %d, FromP: %f"), pDoc->m_Branchs[i].startBus,pDoc->m_Branchs[i].endBus, pDoc->m_Branchs[i].fromP[currentTimeInt]);
 			samplePolyline.m_bDraggable = FALSE; //Allow the polyline to be draggable
 			samplePolyline.m_bEditable = TRUE; //Allow the polyline to be edited
-			samplePolyline.m_fLinePenWidth = 1;
+			samplePolyline.m_fLinePenWidth = 3;
 			if (branch.voltagegrade == 220)
 				samplePolyline.m_colorPen = RGB(0, 0, 128);
 			else if (branch.voltagegrade == 110)
@@ -1738,6 +1791,28 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 		busBranchArray[branch.startBus][branch.endBus] += 1;
 	}
 	/*end draw line for branch*/
+
+	//draw arrow for branch
+	COSMCtrlPolyline lineOnDraw;
+	int polylineSize = m_ctrlOSM.m_Polylines.GetSize();
+	for (int i=0;i<polylineSize;i++)
+	{
+		lineOnDraw = m_ctrlOSM.m_Polylines.ElementAt(i);
+		branch = pDoc->m_Branchs[lineOnDraw.relatedBranch];
+		BranchVisual(branch, currentTimeInt);
+	}
+
+	//draw marker for elec
+	ElecStruct elec;
+	elec = pDoc->m_Elecs[0];
+	COSMCtrlMarker coWexfordMarker;
+	coWexfordMarker.m_Position = COSMCtrlPosition(elec.longitude, elec.latitude);
+	coWexfordMarker.m_sToolTipText = elec.busName;
+	coWexfordMarker.m_nIconIndex = m_nDefaultMarkerIconIndex;
+	coWexfordMarker.m_nMinZoomLevel = 11;
+	coWexfordMarker.m_nMaxZoomLevel = 18;
+	coWexfordMarker.m_bDraggable = TRUE; //Allow the marker to be draggable
+	m_ctrlOSM.m_Markers.Add(coWexfordMarker);
 
 	/*draw marker for vehicle
 	COSMCtrlMarker eVMarker;
@@ -2816,9 +2891,11 @@ void COSMCtrlAppView::OnHelpCalculate()
 	double outBranchArray[2720];
 	mclmcrInitialize();
 	libgodflowInitialize();
-	mwArray in1(76, 13, mxDOUBLE_CLASS, mxREAL);
-	mwArray in2(2, 21, mxDOUBLE_CLASS, mxREAL);
-	mwArray in3(160, 13, mxDOUBLE_CLASS, mxREAL);
+	
+	input1 = new mwArray(76, 13, mxDOUBLE_CLASS, mxREAL);
+	input2 = new mwArray(2, 21, mxDOUBLE_CLASS, mxREAL);
+	input3 = new mwArray(160, 13, mxDOUBLE_CLASS, mxREAL);
+
 	double tmpFather;
 
 	for (int i=0;i<96;i++)
@@ -2890,15 +2967,15 @@ void COSMCtrlAppView::OnHelpCalculate()
 			
 		// Create input data
 
-		in1.SetData(busArray, 988);
-		in2.SetData(genArray, 42);
-        in3.SetData(branchArray, 2080);
+		input1->SetData(busArray, 988);
+		input2->SetData(genArray, 42);
+        input3->SetData(branchArray, 2080);
 		// Create output array
 		mwArray out1, out2, out3;
             
 		// Call the library function
 		try{
-			Newflow(3, out1, out2, out3, in1, in2,in3);
+			Newflow(3, out1, out2, out3, *input1, *input2,*input3);
 		}
 		catch (const mwException& erro)
 		{
@@ -2920,6 +2997,9 @@ void COSMCtrlAppView::OnHelpCalculate()
 			//station->voltageM[i] = 10.1;
 			pDoc->m_Stations[j].voltageM[i] = outBusArray[7*76+j];
 			pDoc->m_Stations[j].voltageA[i] = outBusArray[8*76+j];
+			pDoc->m_Stations[j].loadP[i] = pDoc->m_Stations[j].pdPower[i];
+			pDoc->m_Stations[j].loadQ[i] = pDoc->m_Stations[j].qdPower[i];
+
 			//pDoc->m_Stations.m_stationArray.RemoveAt(j);
 			//pDoc->m_Stations.m_stationArray.InsertAt(j, station);
 		}
@@ -2929,6 +3009,7 @@ void COSMCtrlAppView::OnHelpCalculate()
 			pDoc->m_Gens[j].qgPower[i] = outGenArray[2*2+j];
 		
 		}
+
 		for(int j=0;j<branchSize;j++)
 		{
 			pDoc->m_Branchs[j].fromP[i] = outBranchArray[13*160+j];
@@ -2941,6 +3022,7 @@ void COSMCtrlAppView::OnHelpCalculate()
 			//tmpFather = pDoc->m_Stations[FindBusNumByI(pDoc->m_Branchs[j].fbus, pDoc->m_Stations)].father;
 			double tmpfromp = pDoc->m_Branchs[j].fromP[i];
 			int tmpnumer = pDoc->m_Branchs[j].startBus;
+
 			if (pDoc->m_Branchs[j].fromP[i] > 0)
 				pDoc->m_Stations[pDoc->m_Branchs[j].startBus].loadP[i] += pDoc->m_Branchs[j].fromP[i];
 			
@@ -2953,8 +3035,11 @@ void COSMCtrlAppView::OnHelpCalculate()
 	}
 	double tmpppp = pDoc->m_Stations[2].loadP[15];
 	UpdateStations(40);
-	libgodflowTerminate();
-	mclTerminateApplication();
+	//in1.~mwArray();
+	//delete input1;
+	//input1 = NULL;
+	//libgodflowTerminate();
+	//mclTerminateApplication();
 	/*end calculate in matlab*/
 }
 
@@ -2984,6 +3069,7 @@ void COSMCtrlAppView::OnLButtonDblClk(UINT nFlags, CPoint point)
 	__super::OnLButtonDblClk(nFlags, point);
 }
 
+/*
 void COSMCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
@@ -2991,14 +3077,87 @@ void COSMCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	pView->DblClickUpdate();
 	__super::OnLButtonDblClk(nFlags, point);
 }
+*/
+
+void COSMCtrl::HandleLButtonDblClickCircle(UINT /*nFlags*/, CPoint /*point*/, MapItem /*item*/, INT_PTR nItem, INT_PTR /*nSubItem*/)
+{
+	COSMCtrlCircle& circle = m_Circles.ElementAt(nItem);
+
+	CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
+	COSMCtrlAppView* pView = (COSMCtrlAppView*)pFrame->pRightView;
+	pView->DblClickCircleView(circle.relatedBus);
+}
+
+void COSMCtrl::HandleLButtonDblClickPolyline(UINT /*nFlags*/, CPoint /*point*/, MapItem /*item*/, INT_PTR nItem, INT_PTR /*nSubItem*/)
+{
+	COSMCtrlPolyline& line = m_Polylines.ElementAt(nItem);
+
+	CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
+	COSMCtrlAppView* pView = (COSMCtrlAppView*)pFrame->pRightView;
+	pView->DblClickLineView(line.relatedBranch);
+}
+
+void COSMCtrlAppView::DblClickCircleView(int busNum)
+{
+	CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
+	CFormCommandView* pView = (CFormCommandView*)pFrame->pLeftView;
+	CInfoView *pIView = (CInfoView*)pFrame->pInfoView;
+	double xTime[96];
+	for (int i=0;i<96;i++)
+	{
+		xTime[i]=i;
+	}
+
+	int circleSize = m_ctrlOSM.m_Circles.GetSize();
+	CEdit *pBoxOne, *pBoxTwo, *pBoxThree, *pBoxFour;
+	pBoxOne = (CEdit*) pIView->GetDlgItem(IDC_EDIT1);
+	pBoxTwo = (CEdit*) pIView->GetDlgItem(IDC_EDIT2);
+	pBoxThree = (CEdit*) pIView->GetDlgItem(IDC_EDIT3);
+	pBoxFour = (CEdit*) pIView->GetDlgItem(IDC_EDIT4);
+	StationStruct station;
+	station = pDoc->m_Stations[busNum];
+
+	CString editBusVoltageG,editBusVoltageM,editBusVoltageA;
+
+	editBusVoltageM.Format(_T("%f"), station.voltageM[currentTimeInt]);
+	editBusVoltageG.Format(_T("%d"), station.volGrade);
+	editBusVoltageA.Format(_T("%f"), station.voltageA[currentTimeInt]);
+	pBoxOne->SetWindowTextW(station.busName);
+	pBoxTwo->SetWindowTextW(editBusVoltageG);
+	pBoxThree->SetWindowTextW(editBusVoltageM);
+	pBoxFour->SetWindowTextW(editBusVoltageA);
+
+	pView->UpdateLineGraph(xTime,station.loadP, 96);
+}
+
+void COSMCtrlAppView::DblClickLineView(int branchNum)
+{
+	CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
+	CFormCommandView* pView = (CFormCommandView*)pFrame->pLeftView;
+	CInfoView *pIView = (CInfoView*)pFrame->pInfoView;
+	double xTime[96];
+	for (int i=0;i<96;i++)
+	{
+		xTime[i]=i;
+	}
+
+	
+	BranchStruct branch;
+	branch = pDoc->m_Branchs[branchNum];
+
+
+	pView->UpdateLineGraph(xTime,branch.fromP, 96);
+}
 
 void COSMCtrlAppView::DblClickUpdate()
 {
 	pDoc = GetDocument();
 	COSMCtrlCircle circleOnDraw;
 	COSMCtrlMarker markerOnDraw;
+	COSMCtrlPolyline lineOnDraw;
 	int circleSize = m_ctrlOSM.m_Circles.GetSize();
 	int markerSize = m_ctrlOSM.m_Markers.GetSize();
+	int lineSize = m_ctrlOSM.m_Polylines.GetSize();
 	CMainFrame *pFrame = (CMainFrame *) AfxGetMainWnd();
 	CFormCommandView* pView = (CFormCommandView*)pFrame->pLeftView;
 	CInfoView *pIView = (CInfoView*)pFrame->pInfoView;
@@ -3063,12 +3222,29 @@ void COSMCtrlAppView::DblClickUpdate()
 			else 
 				pView->UpdateLineGraph(xTime,station.loadP, 96);
 				*/
-			pView->UpdateLineGraph(xTime,station.pdPower, 96);
+			pView->UpdateLineGraph(xTime,station.loadP, 96);
 			break;
 		}
-
+	}
+	for(int i = 0; i<lineSize;i++)
+	{
+		double lineArray[96];
+		lineOnDraw = m_ctrlOSM.m_Polylines.ElementAt(i);
 		
-
+		if (lineOnDraw.m_bSelected==TRUE)
+		{
+			//selectedNum = i;
+			//pFrame->SetActiveView(pView);
+			
+			BranchStruct branch;
+			int testIntaa = lineOnDraw.relatedBranch;
+			branch = pDoc->m_Branchs[lineOnDraw.relatedBranch];
+			for (int j = 0; j<96; j++)
+				lineArray[j] = abs(branch.fromP[j]);
+			
+			pView->UpdateLineGraph(xTime,lineArray, 96);
+			break;
+		}
 	}
 }
 
@@ -3095,3 +3271,84 @@ int COSMCtrlAppView::FindBusNumByI(double bus_i, std::vector<StationStruct> m_St
 	return busNum;
 }
 
+void COSMCtrlAppView::BranchVisual(BranchStruct branch, int i)
+{
+	pDoc = GetDocument();
+	double loadPOfBranch = branch.fromP[i]; //current flow on one branch
+	int fBusNum, tBusNum;
+	double fromLon, fromLat, toLon, toLat;
+	double x1,y1,x2,y2,x3,y3,x4,y4;
+	double totalFlow; //total flow for a line on map
+	double slope;
+	double dis12;
+	
+	fBusNum = FindBusNumByI(branch.fbus, pDoc->m_Stations);
+	tBusNum = FindBusNumByI(branch.tbus, pDoc->m_Stations);
+	totalFlow = branch.fromP[i];
+
+	if (loadPOfBranch > 0)
+	{
+		fromLon = pDoc->m_Stations[fBusNum].longitude;
+		toLon = pDoc->m_Stations[tBusNum].longitude; 
+		fromLat = pDoc->m_Stations[fBusNum].latitude; 
+		toLat = pDoc->m_Stations[tBusNum].latitude; 
+	}
+	else 
+	{
+		fromLon = pDoc->m_Stations[tBusNum].longitude;
+		toLon = pDoc->m_Stations[fBusNum].longitude; 
+		fromLat = pDoc->m_Stations[tBusNum].latitude; 
+		toLat = pDoc->m_Stations[fBusNum].latitude; 
+	}
+
+	x1 = (fromLon+toLon)/2;
+	y1 = (fromLat+toLat)/2;
+	slope = (y1-fromLat)/(x1-fromLon);
+	x2 = x1-0.05*(x1-fromLon)*log(log(log(totalFlow*totalFlow)+1)+1);
+	y2 = y1-0.05*(y1-fromLat)*log(log(log(totalFlow*totalFlow)+1)+1);
+
+	dis12 = sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+	x3 = x2+(x1-x2)*abs(slope);
+	x4 = 2*x2-x3;
+	y3 = (x2-x3)/slope+y2;
+	y4 = 2*y2-y3;
+
+	//polygon for arrow
+	COSMCtrlPolygon samplePolygon;
+	  COSMCtrlNode tempPosition = COSMCtrlNode(x1, y1);
+	  samplePolygon.m_Nodes.Add(tempPosition);
+	  tempPosition = COSMCtrlNode(x3, y3);
+	  samplePolygon.m_Nodes.Add(tempPosition);
+	  tempPosition = COSMCtrlNode(x4, y4);
+	  samplePolygon.m_Nodes.Add(tempPosition);
+	#ifdef COSMCTRL_NOD2D
+	  samplePolygon.m_DashCap = Gdiplus::DashCapRound;
+	  samplePolygon.m_EndCap = Gdiplus::LineCapSquareAnchor;
+	  samplePolygon.m_StartCap = Gdiplus::LineCapArrowAnchor;
+	  samplePolygon.m_LineJoin = Gdiplus::LineJoinBevel;
+	  samplePolygon.m_colorPen = Gdiplus::Color(0, 0, 255);
+	#else
+	  samplePolygon.m_DashCap = D2D1_CAP_STYLE_ROUND;
+	  samplePolygon.m_EndCap = D2D1_CAP_STYLE_SQUARE;
+	  samplePolygon.m_StartCap = D2D1_CAP_STYLE_TRIANGLE;
+	  samplePolygon.m_LineJoin = D2D1_LINE_JOIN_BEVEL;
+	  samplePolygon.m_colorPen = D2D1::ColorF(0, 0, 255);
+	  if (totalFlow > branch.capacity)
+		  samplePolygon.m_colorBrush = D2D1::ColorF(255, 0, 0);
+	#endif
+	  samplePolygon.m_fDashOffset = 3;
+	  samplePolygon.m_fLinePenWidth = 1;
+	  if (fBusNum > 11 || tBusNum > 11) {
+			samplePolygon.m_nMinZoomLevel = 11;
+			samplePolygon.m_nMaxZoomLevel = 18;
+	  }
+	  else 
+	  {
+			samplePolygon.m_nMinZoomLevel = 0;
+			samplePolygon.m_nMaxZoomLevel = 18;
+	  }
+	  samplePolygon.m_sToolTipText = _T("A simple Polygon example for COSMCtrl");
+	  samplePolygon.m_bDraggable = FALSE; //Allow the polygon to be draggable
+	  samplePolygon.m_bEditable = TRUE; //Allow the polygon to be editable
+	  m_ctrlOSM.m_Polygons.Add(samplePolygon);
+}

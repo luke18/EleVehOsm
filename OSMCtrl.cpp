@@ -289,6 +289,7 @@ to maintain a single distribution point for the source code.
 #include "OSMCtrlTimerEventHandler.h"
 
 
+
 ///////////////////////////////// Macros / Defines ////////////////////////////
 
 #define WM_OSMCTRL_CREATE_CHILD_CONTROLS WM_APP + 1
@@ -6235,38 +6236,40 @@ void COSMCtrl::HandleLButtonDblClickMarker(UINT /*nFlags*/, CPoint /*point*/, Ma
   //Nothing to do
 }
 
-void COSMCtrl::HandleLButtonDblClickCircle(UINT /*nFlags*/, CPoint /*point*/, MapItem /*item*/, INT_PTR /*nItem*/, INT_PTR /*nSubItem*/)
-{
-  //Nothing to do
-}
 
-void COSMCtrl::HandleLButtonDblClickPolyline(UINT /*nFlags*/, CPoint /*point*/, MapItem /*item*/, INT_PTR nItem, INT_PTR /*nSubItem*/)
-{
-  //We support decimation on double clicks for editable polylines
-  COSMCtrlPolyline& polyline = m_Polylines.ElementAt(nItem);
-  if (polyline.m_bEditable)
-  {
-    //Get the client rect
-    CRect rClient;
-    GetClientRect(&rClient);
+//void COSMCtrl::HandleLButtonDblClickCircle(UINT /*nFlags*/, CPoint /*point*/, MapItem /*item*/, INT_PTR /*nItem*/, INT_PTR /*nSubItem*/)
+//{
+//  //Nothing to do
+//}
 
-    //Force a update at the old polyline bounding rect
-    CRect rBounds;
-    if (GetBoundingRect(polyline, rBounds, rClient))
-      InvalidateRect(&rBounds, FALSE);
 
-    //Perform the decimation      
-    if (DecimatePolyline(polyline, 1, rClient))
-    {
-      //Select all the nodes in the new polyline
-      polyline.Select();
-      
-      //Force a update at the new polyline bounding rect
-      if (GetBoundingRect(polyline, rBounds, rClient))
-        InvalidateRect(&rBounds, FALSE);
-    }
-  }
-}
+//void COSMCtrl::HandleLButtonDblClickPolyline(UINT /*nFlags*/, CPoint /*point*/, MapItem /*item*/, INT_PTR nItem, INT_PTR /*nSubItem*/)
+//{
+//  //We support decimation on double clicks for editable polylines
+//  COSMCtrlPolyline& polyline = m_Polylines.ElementAt(nItem);
+//  if (polyline.m_bEditable)
+//  {
+//    //Get the client rect
+//    CRect rClient;
+//    GetClientRect(&rClient);
+//
+//    //Force a update at the old polyline bounding rect
+//    CRect rBounds;
+//    if (GetBoundingRect(polyline, rBounds, rClient))
+//      InvalidateRect(&rBounds, FALSE);
+//
+//    //Perform the decimation      
+//    if (DecimatePolyline(polyline, 1, rClient))
+//    {
+//      //Select all the nodes in the new polyline
+//      polyline.Select();
+//      
+//      //Force a update at the new polyline bounding rect
+//      if (GetBoundingRect(polyline, rBounds, rClient))
+//        InvalidateRect(&rBounds, FALSE);
+//    }
+//  }
+//}
 
 void COSMCtrl::HandleLButtonDblClickPolygon(UINT /*nFlags*/, CPoint /*point*/, MapItem /*item*/, INT_PTR nItem, INT_PTR /*nSubItem*/)
 {
@@ -6325,7 +6328,7 @@ void COSMCtrl::HandleLButtonDblClickMap(UINT /*nFlags*/, CPoint point, MapItem /
   }
 }
 
-/*
+
 void COSMCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
   //Call the event handler if possible
@@ -6381,7 +6384,7 @@ void COSMCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
   //Let the base class do its thing
   CStatic::OnLButtonDblClk(nFlags, point);
 }
-*/
+
 void COSMCtrl::StartDrag(const CPoint& point, MapItem item, INT_PTR nItem, INT_PTR nSubItem)
 {
   //Capture the mouse and remember the initial drag position

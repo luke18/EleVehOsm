@@ -11,6 +11,8 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include "libgodflow.h"
+
 
 class CMySensorEvents : public CMFCSensorEvents
 {
@@ -40,7 +42,11 @@ public:
 	int currentTimeInt;
 	int selectedNum;
 	double busBranchArray[35][35];
-
+	double busBranchRef[35][35];
+	mwArray *input1;
+	mwArray *input2;
+	mwArray *input3;
+	
 // Operations
 public:
 
@@ -60,6 +66,9 @@ public:
 	virtual ~COSMCtrlAppView();
 	void UpdateStations(int timeNumber); // Fetch stations in doc and show on map
 	void DblClickUpdate();
+	void DblClickCircleView(int busNum);
+	void DblClickLineView(int branchNum);
+	void BranchVisual(BranchStruct branch, int i);
 	void OnZoomSp();
 	void OnSwitchNormal();
 	void OnSwitchMarker();
@@ -93,7 +102,8 @@ protected:
   void DoAddressLookup(CPoint point);
   void DoRefreshTile(CPoint point);
   void DoTileProperties(CPoint point);
-  int FindBusNumByI(double bus_i, std::vector<StationStruct> m_Stations); //Find the father number of the bus_i
+  int FindBusNumByI(double bus_i, std::vector<StationStruct> m_Stations); //Find the father number  of the bus_i(0,1,2...)
+  
   //void ReadInBusData();
   
 #ifdef COSMCTRL_NOD2D

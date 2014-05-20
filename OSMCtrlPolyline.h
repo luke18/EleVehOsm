@@ -60,6 +60,7 @@ public:
   
 //Member variables
   int relatedBranch;
+  BOOL                                m_bSelected;           //Is this circle selected
   CArray<COSMCtrlNode, COSMCtrlNode&> m_Nodes;                //The array of position for this polyline
   float                               m_fLinePenWidth;        //The width of the line to draw
 #ifdef COSMCTRL_NOD2D
