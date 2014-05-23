@@ -920,7 +920,7 @@
     <ClInclude Include="GPSCom2Client.h" />
     <ClInclude Include="GpsSettingsDlg.h" />
     <ClInclude Include="InfoView.h" />
-    <ClInclude Include="libfinalflow.h" />
+    <ClInclude Include="libgodflow.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MFCSensor.h" />
     <ClInclude Include="OSMCtrl.h" />
@@ -952,13 +952,16 @@
     <ClInclude Include="WinHttp.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="branchnum.csv" />
-    <None Include="bus2num.csv" />
+    <None Include="branchdata.csv" />
+    <None Include="busdata.csv" />
     <None Include="ChartCtrl\ChartBalloonLabel.inl" />
     <None Include="ChartCtrl\ChartLabel.inl" />
     <None Include="ChartCtrl\ChartPointsArray.inl" />
     <None Include="ChartCtrl\ChartSerieBase.inl" />
-    <None Include="loaddata.csv" />
+    <None Include="elecdata.csv" />
+    <None Include="gendata.csv" />
+    <None Include="libgodflow.dll" />
+    <None Include="loadratio.csv" />
     <None Include="res\icon1.png" />
     <None Include="res\OSMCtrlApp.ico" />
     <None Include="res\OSMCtrlApp.rc2" />
@@ -967,6 +970,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OSMCtrlApp.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="libgodflow.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

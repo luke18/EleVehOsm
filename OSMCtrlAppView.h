@@ -41,7 +41,7 @@ public:
 	double outPgPower[96], outQgPower[96];
 	int currentTimeInt;
 	int selectedNum;
-	double busBranchArray[35][35];
+	double busBranchArray[81][81];
 	double busBranchRef[35][35];
 	mwArray *input1;
 	mwArray *input2;
@@ -69,6 +69,8 @@ public:
 	void DblClickCircleView(int busNum);
 	void DblClickLineView(int branchNum);
 	void BranchVisual(BranchStruct branch, int i);
+	void GetCarbonRatio(); //calculate the carbon ratio of every bus
+	void GetCarbonFlow();
 	void OnZoomSp();
 	void OnSwitchNormal();
 	void OnSwitchMarker();

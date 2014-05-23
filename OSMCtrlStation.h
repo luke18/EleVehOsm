@@ -13,6 +13,7 @@ struct StationStruct
 	double pdPower[96], qdPower[96];
 	double voltageM[96], voltageA[96];
 	double loadP[96], loadQ[96];
+	double carbonRatio;
 };
 
 struct GenStruct
@@ -27,6 +28,8 @@ struct BranchStruct
 	double fromP[96], toP[96], fromQ[96], toQ[96];
 	int startBus, endBus; //on the simple map
 	double capacity;
+	BOOL carbonAddTest;
+	double carbonFlow[96];
 };
 
 struct ElecStruct 

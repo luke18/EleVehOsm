@@ -564,7 +564,7 @@ while ( getline(in4,line) ) {  // get next line in file
 COSMCtrlAppDoc*pDoc = GetDocument();
 /*put bus data*/
 StationStruct station;
-for(int i = 1; i < 77; i++)
+for(int i = 1; i < 82; i++)
 {
 
 	station.busName = busdataArray[i][0].c_str();
@@ -585,6 +585,7 @@ for(int i = 1; i < 77; i++)
 	station.volGrade = atof(busdataArray[i][17].c_str());
 	station.father = atof(busdataArray[i][18].c_str());
 	station.kind = atof(busdataArray[i][19].c_str());
+	station.carbonRatio = 0.0;
 	//station.busNumber = atoi(busdataArray[i][5].c_str());
 	for (int j = 0; j < 96; j++)
 	{
@@ -650,7 +651,7 @@ pDoc->m_Elecs.push_back(elec);
 
 /* put branch data*/
 BranchStruct branch;
-for (int i = 1; i < 161; i++)
+for (int i = 1; i < 165; i++)
 {
 	branch.fbus = atof(branchdataArray[i][0].c_str());
 	branch.tbus = atof(branchdataArray[i][1].c_str());
@@ -669,6 +670,7 @@ for (int i = 1; i < 161; i++)
 	branch.capacity = atof(branchdataArray[i][14].c_str());
 	branch.startBus = FindBusNumByI(branch.fbus, pDoc->m_Stations);
 	branch.endBus = FindBusNumByI(branch.tbus, pDoc->m_Stations);
+	branch.carbonAddTest = FALSE;
 
 	for (int j = 0; j < 96; j++)
 	{
@@ -762,7 +764,21 @@ selectedNum = 3;
 //mwArray input2(2, 21, mxDOUBLE_CLASS, mxREAL);
 //mwArray input3(160, 13, mxDOUBLE_CLASS, mxREAL);
 
+/*start initial carbon ratio in bus*/
+pDoc->m_Stations[0].carbonRatio = 960;
+pDoc->m_Stations[1].carbonRatio = 960;
+pDoc->m_Stations[77].carbonRatio = 9;
+pDoc->m_Stations[78].carbonRatio = 9;
+pDoc->m_Stations[79].carbonRatio = 443;
+pDoc->m_Stations[80].carbonRatio = 9;
 
+for (int j = 0; j < 96; j++)
+{
+	pDoc->m_Branchs[160].fromP[j] = 10 * atof(loadratioArray[j+1][0].c_str());
+	pDoc->m_Branchs[161].fromP[j] = 10 * atof(loadratioArray[j+1][0].c_str());
+	pDoc->m_Branchs[162].fromP[j] = 30 * atof(loadratioArray[j+1][0].c_str());
+	pDoc->m_Branchs[163].fromP[j] = 10 * atof(loadratioArray[j+1][0].c_str());
+}
 
 UpdateStations(40);
 
@@ -1661,24 +1677,35 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 			#else
 			sampleCircle.m_colorBrush = D2D1::ColorF(200,128,0,50);
 			#endif
-			sampleCircle.m_nMinZoomLevel = 11;
+			sampleCircle.m_nMinZoomLevel = 18;
 		}
 		#ifdef COSMCTRL_NOD2D
 		sampleCircle.m_DashStyle = Gdiplus::DashStyleDashDot;
 		sampleCircle.m_colorPen = Gdiplus::Color(255,69,0);
 		#else
 		sampleCircle.m_DashStyle = D2D1_DASH_STYLE_DASH;
-		sampleCircle.m_colorPen = D2D1::ColorF(0,0,0);
+		//sampleCircle.m_colorPen = D2D1::ColorF(0,0,0);
 		#endif
-		sampleCircle.m_fLinePenWidth = 2;
+		sampleCircle.m_fLinePenWidth = 0.1;
+		if(i == 0 || i==1)
+		{
+			sampleCircle.m_colorPen = D2D1::ColorF(254,0,0);
+			sampleCircle.m_fLinePenWidth = 3;
+		}
+		else if (i==77||i==78||i==80||i==79)
+		{
+			sampleCircle.m_colorPen = D2D1::ColorF(0,254,0);
+			sampleCircle.m_fLinePenWidth = 3;
+		}
 		sampleCircle.m_nMaxZoomLevel = 18;
 		//CString tooltips;
 		//tooltips.Format(_T("%d"), station.busNumber);
-		sampleCircle.m_sToolTipText = station.busName;
+		sampleCircle.m_sToolTipText.Format( _T("Name: %s, CR: %f"), station.busName, station.carbonRatio);
 		sampleCircle.m_bDraggable = FALSE; //Allow the circle to be draggable
 		sampleCircle.m_bEditable = TRUE; //Allow the circle to be editable
 		m_ctrlOSM.m_Circles.Add(sampleCircle);
 	/*end capacity circle*/
+		/*real part of station
 		sampleCircle2.m_Position = COSMCtrlPosition(station.longitude, station.latitude);
 		//sampleCircle2.m_fRadius = (station.pdPower[timeNumber]*10);
 		double tmpladoddddd = station.loadP[currentTimeInt];
@@ -1710,7 +1737,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 			#else
 			sampleCircle2.m_colorBrush = D2D1::ColorF(230,128,0,64);
 			#endif
-			sampleCircle2.m_nMinZoomLevel = 11;
+			sampleCircle2.m_nMinZoomLevel = 18;
 		}
 		#ifdef COSMCTRL_NOD2D
 		sampleCircle2.m_DashStyle = Gdiplus::DashStyleDashDot;
@@ -1720,19 +1747,22 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 		sampleCircle2.m_colorPen = D2D1::ColorF(255,255,255);
 		#endif
 		sampleCircle2.m_fLinePenWidth = 2;
+		
 		if (station.loadP[currentTimeInt] > station.capacity)
 		{
 			sampleCircle2.m_DashStyle = D2D1_DASH_STYLE_DASH;
 			sampleCircle2.m_colorPen = D2D1::ColorF(255,0,0);
 			sampleCircle2.m_fLinePenWidth = 5;
 		}
+		
 		sampleCircle2.m_nMaxZoomLevel = 18;
 		//CString tooltips;
 		//tooltips.Format(_T("%d"), station.busNumber);
-		sampleCircle2.m_sToolTipText = station.busName;
+		sampleCircle2.m_sToolTipText.Format( _T("Name: %s, CR: %f"), station.busName, station.carbonRatio);
 		sampleCircle2.m_bDraggable = FALSE; //Allow the circle to be draggable
 		sampleCircle2.m_bEditable = TRUE; //Allow the circle to be editable
 		m_ctrlOSM.m_Circles.Add(sampleCircle2);
+		*/
 	/*end real power circle*/
 	}
 	/*end draw circle for bus*/
@@ -1740,8 +1770,8 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 	m_ctrlOSM.m_Circles.GetAt(selectedNum).m_bSelected = TRUE;
 
 	/*begin draw line for branch*/
-	for(int i =0;i<35;i++)
-		for (int j=0;j<35;j++)
+	for(int i =0;i<81;i++)
+		for (int j=0;j<81;j++)
 			busBranchArray[i][j] = 0;
 	for (int i = 0; i < branchSize; i++) 
 	{
@@ -1755,7 +1785,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 		station2 = pDoc->m_Stations[branch.endBus];
 		//pDoc->m_Stations.GetStation(startBus-1,&station1);
 		//pDoc->m_Stations.GetStation(endBus-1,&station2);
-		if(busBranchArray[branch.startBus][branch.endBus] == 0 && branch.startBus!=branch.endBus)
+		if((busBranchArray[branch.startBus][branch.endBus] == 0 && branch.startBus!=branch.endBus))
 		{
 			COSMCtrlPolyline samplePolyline;
 			COSMCtrlNode tempPosition(station1.longitude, station1.latitude);
@@ -1766,8 +1796,8 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 
 			samplePolyline.relatedBranch =i;
 
-			if (branch.startBus > 10 || branch.endBus > 10) {
-				samplePolyline.m_nMinZoomLevel = 11;
+			if ((branch.startBus > 10 && branch.startBus < 76) || (branch.endBus > 10) && branch.endBus <76) {
+				samplePolyline.m_nMinZoomLevel = 18;
 				samplePolyline.m_nMaxZoomLevel = 18;
 			}
 			else 
@@ -1775,10 +1805,10 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 				samplePolyline.m_nMinZoomLevel = 0;
 				samplePolyline.m_nMaxZoomLevel = 18;
 			}
-			samplePolyline.m_sToolTipText.Format( _T("From: %d, To: %d, FromP: %f"), pDoc->m_Branchs[i].startBus,pDoc->m_Branchs[i].endBus, pDoc->m_Branchs[i].fromP[currentTimeInt]);
+			samplePolyline.m_sToolTipText.Format( _T("From: %d, To: %d, FromP: %f, CF: %f"), pDoc->m_Branchs[i].startBus,pDoc->m_Branchs[i].endBus, pDoc->m_Branchs[i].fromP[currentTimeInt], branch.carbonFlow[currentTimeInt]);
 			samplePolyline.m_bDraggable = FALSE; //Allow the polyline to be draggable
 			samplePolyline.m_bEditable = TRUE; //Allow the polyline to be edited
-			samplePolyline.m_fLinePenWidth = 3;
+			samplePolyline.m_fLinePenWidth = 1;
 			if (branch.voltagegrade == 220)
 				samplePolyline.m_colorPen = RGB(0, 0, 128);
 			else if (branch.voltagegrade == 110)
@@ -1809,7 +1839,7 @@ void COSMCtrlAppView::UpdateStations(int timeNumber)
 	coWexfordMarker.m_Position = COSMCtrlPosition(elec.longitude, elec.latitude);
 	coWexfordMarker.m_sToolTipText = elec.busName;
 	coWexfordMarker.m_nIconIndex = m_nDefaultMarkerIconIndex;
-	coWexfordMarker.m_nMinZoomLevel = 11;
+	coWexfordMarker.m_nMinZoomLevel = 18;
 	coWexfordMarker.m_nMaxZoomLevel = 18;
 	coWexfordMarker.m_bDraggable = TRUE; //Allow the marker to be draggable
 	m_ctrlOSM.m_Markers.Add(coWexfordMarker);
@@ -2880,9 +2910,9 @@ void COSMCtrlAppView::OnHelpCalculate()
 {
 	/*start calculate in matlab*/
 	pDoc = GetDocument();
-	int busSize = pDoc->m_Stations.size();
+	int busSize = 76;
 	int genSize = pDoc->m_Gens.size();
-	int branchSize = pDoc->m_Branchs.size();
+	int branchSize = 160;
 	double busArray[988]; 
 	double genArray[42];
 	double branchArray[2080];
@@ -3034,6 +3064,11 @@ void COSMCtrlAppView::OnHelpCalculate()
 
 	}
 	double tmpppp = pDoc->m_Stations[2].loadP[15];
+	/*calculate carbon ratio*/
+	GetCarbonRatio();
+	GetCarbonFlow();
+	/*end carbon ratio*/
+
 	UpdateStations(40);
 	//in1.~mwArray();
 	//delete input1;
@@ -3339,7 +3374,7 @@ void COSMCtrlAppView::BranchVisual(BranchStruct branch, int i)
 	  samplePolygon.m_fDashOffset = 3;
 	  samplePolygon.m_fLinePenWidth = 1;
 	  if (fBusNum > 11 || tBusNum > 11) {
-			samplePolygon.m_nMinZoomLevel = 11;
+			samplePolygon.m_nMinZoomLevel = 18;
 			samplePolygon.m_nMaxZoomLevel = 18;
 	  }
 	  else 
@@ -3351,4 +3386,108 @@ void COSMCtrlAppView::BranchVisual(BranchStruct branch, int i)
 	  samplePolygon.m_bDraggable = FALSE; //Allow the polygon to be draggable
 	  samplePolygon.m_bEditable = TRUE; //Allow the polygon to be editable
 	  m_ctrlOSM.m_Polygons.Add(samplePolygon);
+}
+
+void COSMCtrlAppView::GetCarbonRatio()
+{
+	COSMCtrlPolyline lineOnFocus;
+	BranchStruct branch;
+	int startBus, endBus;
+	int AddedNumber = 0;
+	int showedNumber = 0;
+	int polyLineSize = m_ctrlOSM.m_Polylines.GetSize();
+	double capacityFrom[11];
+	double mSumFrom[11];
+	for (int i = 0; i < 11; i++)
+	{
+		capacityFrom[i] = 0.0001;
+		mSumFrom[i] = 0;
+	}
+
+	for (int i = 0; i < polyLineSize; i++)
+	{
+		lineOnFocus = m_ctrlOSM.m_Polylines.ElementAt(i);
+		if (lineOnFocus.m_nMinZoomLevel == 0)
+			showedNumber += 1;
+	}
+
+
+	COSMCtrlPolyline linetest;
+//	linetest = m_ctrlOSM.m_Polylines.ElementAt(polyLineSize-1);
+	while (AddedNumber < showedNumber - 1)
+	{
+		for (int i = 0; i < polyLineSize-1; i++)
+		{
+			lineOnFocus = m_ctrlOSM.m_Polylines.ElementAt(i);
+			if (lineOnFocus.m_nMinZoomLevel==18)
+				continue;
+			int tmp = lineOnFocus.relatedBranch;
+			branch = pDoc->m_Branchs[lineOnFocus.relatedBranch];
+			startBus = branch.startBus;
+			endBus = branch.endBus;
+			if (pDoc->m_Stations[startBus].carbonRatio != 0 && branch.fromP[1] > 0 && !branch.carbonAddTest) 
+			{
+				capacityFrom[endBus] += pDoc->m_Stations[startBus].capacity;
+				mSumFrom[endBus] += pDoc->m_Stations[startBus].capacity * pDoc->m_Stations[startBus].carbonRatio;
+				pDoc->m_Branchs[lineOnFocus.relatedBranch].carbonAddTest = TRUE;
+				AddedNumber += 1;
+			}
+			else if (pDoc->m_Stations[endBus].carbonRatio != 0 && branch.fromP[1] < 0 && !branch.carbonAddTest) 
+			{
+				capacityFrom[startBus] += pDoc->m_Stations[endBus].capacity;
+				mSumFrom[startBus] += pDoc->m_Stations[endBus].capacity * pDoc->m_Stations[endBus].carbonRatio;
+				pDoc->m_Branchs[lineOnFocus.relatedBranch].carbonAddTest = TRUE;
+				AddedNumber += 1;
+			}
+		}
+
+		for (int i = 0; i < 11; i++)
+		{
+			pDoc->m_Stations[i].carbonRatio = mSumFrom[i]/capacityFrom[i];
+		}
+	}
+
+}
+
+void COSMCtrlAppView::GetCarbonFlow()
+{
+	COSMCtrlPolyline lineOnFocus;
+	BranchStruct branch;
+	StationStruct station;
+	int startBus, endBus;
+	int AddedNumber = 0;
+	int showedNumber = 0;
+	int polyLineSize = m_ctrlOSM.m_Polylines.GetSize();
+	double capacityFrom[11];
+	double mSumFrom[11];
+	for (int i = 0; i < 11; i++)
+	{
+		capacityFrom[i] = 0.0001;
+		mSumFrom[i] = 0;
+	}
+
+	for (int i = 0; i < polyLineSize; i++)
+	{
+		lineOnFocus = m_ctrlOSM.m_Polylines.ElementAt(i);
+		if (lineOnFocus.m_nMinZoomLevel == 0)
+			showedNumber += 1;
+	}
+
+	for (int i = 0; i < polyLineSize-1; i++)
+		{
+			lineOnFocus = m_ctrlOSM.m_Polylines.ElementAt(i);
+			if (lineOnFocus.m_nMinZoomLevel==18 || lineOnFocus.relatedBranch == -1)
+				continue;
+			branch = pDoc->m_Branchs[lineOnFocus.relatedBranch];
+			startBus = branch.startBus;
+			endBus = branch.endBus;
+			if ( branch.fromP[10] > 0)
+				station = pDoc->m_Stations[startBus];
+			else 
+				station = pDoc->m_Stations[endBus];
+			for (int j = 0; j < 96; j++)
+				pDoc->m_Branchs[lineOnFocus.relatedBranch].carbonFlow[j] = station.carbonRatio * abs(branch.fromP[j]);
+
+		}
+
 }
